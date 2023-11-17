@@ -1,0 +1,191 @@
+"""
+Module for monitoring Cohere API calls.
+"""
+
+import time
+from .__helpers import send_data
+
+def count_tokens(text):
+    """
+    Count the number of tokens in the given text.
+
+    Args:
+        text (str): The input text.
+
+    Returns:
+        int: The number of tokens in the text.
+    """
+
+    tokens_per_word = 2
+
+    # Split the text into words
+    words = text.split()
+
+    # Calculate the number of tokens
+    num_tokens = round(len(words) * tokens_per_word)
+
+    return num_tokens
+
+def init(func, doku_url, token):
+    """
+    Initialize Cohere monitoring for Doku.
+
+    Args:
+        func: The Cohere function to be patched.
+        doku_url (str): Doku URL.
+        token (str): Doku Authentication token.
+    """
+
+    original_generate = func.generate
+    original_embed = func.embed
+    original_chat = func.chat
+    original_summarize = func.summarize
+
+    def patched_generate(*args, **kwargs):
+        """
+        Patched version of Cohere's generate method.
+
+        Args:
+            *args: Variable positional arguments.
+            **kwargs: Variable keyword arguments.
+
+        Returns:
+            CohereResponse: The response from Cohere's generate method.
+        """
+
+        start_time = time.time()
+        response = original_generate(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        model = kwargs.get('model') if 'model' in kwargs else "command"
+        prompt = kwargs.get('prompt')
+
+        for generation in response:
+            data = {
+                    "source": "python",
+                    "endpoint": "cohere.generate",
+                    "completionTokens": count_tokens(generation.text),
+                    "promptTokens": count_tokens(prompt),
+                    "requestDuration": duration,
+                    "model": model,
+                    "prompt": prompt,
+                    "response": generation.text,
+            }
+
+            if "stream" not in kwargs:
+                data["finishReason"] = generation.finish_reason
+
+            send_data(data, doku_url, token)
+
+        return response
+
+    def embeddings_generate(*args, **kwargs):
+        """
+        Patched version of Cohere's embeddings generate method.
+
+        Args:
+            *args: Variable positional arguments.
+            **kwargs: Variable keyword arguments.
+
+        Returns:
+            CohereResponse: The response from Cohere's embeddings generate method.
+        """
+
+        start_time = time.time()
+        response = original_embed(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        model = kwargs.get('model') if 'model' in kwargs else "embed-english-v2.0"
+        prompt = kwargs.get('texts')
+
+        data = {
+                "source": "python",
+                "endpoint": "cohere.embed",
+                "requestDuration": duration,
+                "model": model,
+                "prompt": prompt,
+        }
+
+        send_data(data, doku_url, token)
+
+        return response
+
+    def chat_generate(*args, **kwargs):
+        """
+        Patched version of Cohere's chat generate method.
+
+        Args:
+            *args: Variable positional arguments.
+            **kwargs: Variable keyword arguments.
+
+        Returns:
+            CohereResponse: The response from Cohere's chat generate method.
+        """
+
+        start_time = time.time()
+        response = original_chat(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        model = kwargs.get('model') if 'model' in kwargs else "command"
+        prompt = kwargs.get('message')
+        cost = response.token_count['billed_tokens'] * 0.000002
+
+        if "stream" not in kwargs:
+
+            data = {
+                    "source": "python",
+                    "endpoint": "cohere.chat",
+                    "requestDuration": duration,
+                    "completionTokens": response.token_count["response_tokens"],
+                    "promptTokens": response.token_count["prompt_tokens"],
+                    "totalTokens": response.token_count["total_tokens"] ,
+                    "usageCost": cost,
+                    "model": model,
+                    "prompt": prompt,
+                    "response": response.text
+            }
+
+        send_data(data, doku_url, token)
+
+        return response
+
+    def summarize_generate(*args, **kwargs):
+        """
+        Patched version of Cohere's summarize generate method.
+
+        Args:
+            *args: Variable positional arguments.
+            **kwargs: Variable keyword arguments.
+
+        Returns:
+            CohereResponse: The response from Cohere's summarize generate method.
+        """
+
+        start_time = time.time()
+        response = original_summarize(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        model = kwargs.get('model') if 'model' in kwargs else "command"
+        prompt = kwargs.get('text')
+
+        if "stream" not in kwargs:
+
+            data = {
+                    "source": "python",
+                    "endpoint": "cohere.chat",
+                    "requestDuration": duration,
+                    "completionTokens": count_tokens(response.summary),
+                    "promptTokens": count_tokens(prompt),
+                    "model": model,
+                    "prompt": prompt,
+                    "response": response.summary
+            }
+
+        send_data(data, doku_url, token)
+
+        return response
+
+    func.generate = patched_generate
+    func.embed = embeddings_generate
+    func.chat = chat_generate
+    func.summarize = summarize_generate
