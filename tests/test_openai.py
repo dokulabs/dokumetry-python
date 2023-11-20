@@ -108,6 +108,7 @@ def test_image_generation():
     image_generation_resp = client.images.generate(
         model='dall-e-2',
         prompt='Generate an image of a cat.'
+        n=1
     )
     assert image_generation_resp.created is not None
 
@@ -121,7 +122,7 @@ def test_image_variation_creation():
     # pylint: disable=consider-using-with
     image_variation_resp = client.images.create_variation(
         image=open("tests/test-image-for-openai.png", "rb"),
-        n=2,
+        n=1,
         size="1024x1024"
     )
     assert image_variation_resp.created is not None
