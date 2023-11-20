@@ -67,7 +67,7 @@ def test_summarize():
         )
         assert summarize_resp.id is not None
     except Exception as e:
-        if 'limited to 10 API calls / minute' or 'limited to 500 API calls / month'  in str(e):
+        if 'limited to 10 API calls / minute' in str(e) or 'limited to 500 API calls / month' in str(e):
             print("Rate Limited")
 
 def test_generate_with_prompt():
@@ -81,7 +81,7 @@ def test_generate_with_prompt():
         )
         assert generate_resp.prompt == 'Doku'
     except Exception as e:
-        if 'limited to 10 API calls / minute' or 'limited to 500 API calls / month'  in str(e):
+        if 'limited to 10 API calls / minute' in str(e) or 'limited to 500 API calls / month' in str(e):
             print("Rate Limited")
 
 def test_embed():
@@ -95,7 +95,7 @@ def test_embed():
         assert embeddings_resp.meta is not None
     
     except Exception as e:
-        if 'limited to 10 API calls / minute' or 'limited to 500 API calls / month'  in str(e):
+        if 'limited to 10 API calls / minute' in str(e) or 'limited to 500 API calls / month' in str(e):
             print("Rate Limited")
 
 def test_chat():
@@ -110,5 +110,5 @@ def test_chat():
         assert chat_resp.response_id is not None
 
     except Exception as e:
-        if 'limited to 10 API calls / minute' or 'limited to 500 API calls / month'  in str(e):
+        if 'limited to 10 API calls / minute' in str(e) or 'limited to 500 API calls / month' in str(e):
             print("Rate Limited")

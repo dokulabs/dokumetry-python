@@ -7,7 +7,7 @@ from .__helpers import send_data , get_prompt_and_model
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def init(func, doku_url, token, environment, applicationName):
+def init(func, doku_url, token, environment, application_name):
     """
     Initialize OpenAI monitoring for Doku.
 
@@ -45,7 +45,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
             "environment": environment,
-            "applicationName": applicationName,
+            "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.chat.completions",
             "requestDuration": duration,
@@ -84,7 +84,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
             "environment": environment,
-            "applicationName": applicationName,
+            "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.completions",
             "requestDuration": duration,
@@ -123,7 +123,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
             "environment": environment,
-            "applicationName": applicationName,
+            "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.emdeddings",
             "requestDuration": duration,
@@ -157,7 +157,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
             "environment": environment,
-            "applicationName": applicationName,
+            "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.fine_tuning",
             "requestDuration": duration,
@@ -200,7 +200,7 @@ def init(func, doku_url, token, environment, applicationName):
         for items in response.data:
             data = {
                 "environment": environment,
-                "applicationName": applicationName,
+                "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "openai.images.create",
                 "requestDuration": duration,
@@ -246,7 +246,7 @@ def init(func, doku_url, token, environment, applicationName):
 
             data = {
                 "environment": environment,
-                "applicationName": applicationName,
+                "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "openai.images.create.variations",
                 "requestDuration": duration,
@@ -281,7 +281,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
             "environment": environment,
-            "applicationName": applicationName,
+            "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.audio.speech.create",
             "requestDuration": duration,

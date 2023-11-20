@@ -26,7 +26,7 @@ def count_tokens(text):
 
     return num_tokens
 
-def init(func, doku_url, token, environment, applicationName):
+def init(func, doku_url, token, environment, application_name):
     """
     Initialize Cohere monitoring for Doku.
 
@@ -63,7 +63,7 @@ def init(func, doku_url, token, environment, applicationName):
         for generation in response:
             data = {
                     "environment": environment,
-                    "applicationName": applicationName,
+                    "applicationName": application_name,
                     "sourceLanguage": "python",
                     "endpoint": "cohere.generate",
                     "completionTokens": count_tokens(generation.text),
@@ -102,7 +102,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
                 "environment": environment,
-                "applicationName": applicationName,
+                "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "cohere.embed",
                 "requestDuration": duration,
@@ -138,7 +138,7 @@ def init(func, doku_url, token, environment, applicationName):
 
             data = {
                     "environment": environment,
-                    "applicationName": applicationName,
+                    "applicationName": application_name,
                     "sourceLanguage": "python",
                     "endpoint": "cohere.chat",
                     "requestDuration": duration,
@@ -178,7 +178,7 @@ def init(func, doku_url, token, environment, applicationName):
 
             data = {
                     "environment": environment,
-                    "applicationName": applicationName,
+                    "applicationName": application_name,
                     "sourceLanguage": "python",
                     "endpoint": "cohere.chat",
                     "requestDuration": duration,

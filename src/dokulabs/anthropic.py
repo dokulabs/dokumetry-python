@@ -5,7 +5,7 @@ Module for monitoring Anthropic API calls.
 import time
 from .__helpers import send_data
 
-def init(func, doku_url, token, environment, applicationName):
+def init(func, doku_url, token, environment, application_name):
     """
     Initialize Anthropic integration with Doku.
 
@@ -42,7 +42,7 @@ def init(func, doku_url, token, environment, applicationName):
 
         data = {
                 "environment": environment,
-                "applicationName": applicationName,
+                "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "anthropic.completions",
                 "completionTokens": completion_tokens,
