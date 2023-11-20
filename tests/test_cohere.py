@@ -32,9 +32,6 @@ co = cohere.Client(os.getenv("COHERE_API_TOKEN"))
 # Global cohere initialization
 dokulabs.init(co, os.getenv("DOKU_URL"), os.getenv("DOKU_TOKEN"))
 
-rate_limit_message = 'limited to 10 API calls / minute'
-rate_limit_message_month = 'limited to 500 API calls / month'
-
 # pylint disable=line-too-long
 def test_summarize():
     """
@@ -69,9 +66,9 @@ def test_summarize():
             text=text
         )
         assert summarize_resp.id is not None
-    except Exception as e:
-        if rate_limit_message in str(e) or rate_limit_message_month in str(e):
-            print("Rate Limited")
+
+    except cohere.error.CohereAPIError as e:
+        print("Rate Limited:", e)
 
 def test_generate_with_prompt():
     """
@@ -83,10 +80,9 @@ def test_generate_with_prompt():
             max_tokens=10
         )
         assert generate_resp.prompt == 'Doku'
-    # pylint disable=broad-exception-caught
-    except Exception as e:
-        if rate_limit_message in str(e) or rate_limit_message_month in str(e):
-            print("Rate Limited")
+
+    except cohere.error.CohereAPIError as e:
+        print("Rate Limited:", e)
 
 def test_embed():
     """
@@ -97,10 +93,9 @@ def test_embed():
             texts=['This is a test']
         )
         assert embeddings_resp.meta is not None
-    # pylint disable=broad-exception-caught
-    except Exception as e:
-        if rate_limit_message in str(e) or rate_limit_message_month in str(e):
-            print("Rate Limited")
+
+    except cohere.error.CohereAPIError as e:
+        print("Rate Limited:", e)
 
 def test_chat():
     """
@@ -112,7 +107,6 @@ def test_chat():
             model='command'
         )
         assert chat_resp.response_id is not None
-    # pylint disable=broad-exception-caught
-    except Exception as e:
-        if rate_limit_message in str(e) or rate_limit_message_month in str(e):
-            print("Rate Limited")
+
+    except cohere.error.CohereAPIError as e:
+        print("Rate Limited:", e)
