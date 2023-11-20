@@ -26,7 +26,7 @@ def count_tokens(text):
 
     return num_tokens
 
-def init(func, doku_url, token):
+def init(func, doku_url, token, environment, applicationName):
     """
     Initialize Cohere monitoring for Doku.
 
@@ -62,7 +62,9 @@ def init(func, doku_url, token):
 
         for generation in response:
             data = {
-                    "source": "python",
+                    "environment": environment,
+                    "applicationName": applicationName,
+                    "sourceLanguage": "python",
                     "endpoint": "cohere.generate",
                     "completionTokens": count_tokens(generation.text),
                     "promptTokens": count_tokens(prompt),
@@ -99,7 +101,9 @@ def init(func, doku_url, token):
         prompt = kwargs.get('texts')
 
         data = {
-                "source": "python",
+                "environment": environment,
+                "applicationName": applicationName,
+                "sourceLanguage": "python",
                 "endpoint": "cohere.embed",
                 "requestDuration": duration,
                 "model": model,
@@ -133,7 +137,9 @@ def init(func, doku_url, token):
         if "stream" not in kwargs:
 
             data = {
-                    "source": "python",
+                    "environment": environment,
+                    "applicationName": applicationName,
+                    "sourceLanguage": "python",
                     "endpoint": "cohere.chat",
                     "requestDuration": duration,
                     "completionTokens": response.token_count["response_tokens"],
@@ -171,7 +177,9 @@ def init(func, doku_url, token):
         if "stream" not in kwargs:
 
             data = {
-                    "source": "python",
+                    "environment": environment,
+                    "applicationName": applicationName,
+                    "sourceLanguage": "python",
                     "endpoint": "cohere.chat",
                     "requestDuration": duration,
                     "completionTokens": count_tokens(response.summary),

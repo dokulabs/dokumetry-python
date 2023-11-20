@@ -7,7 +7,7 @@ from .__helpers import send_data , get_prompt_and_model
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def init(func, doku_url, token):
+def init(func, doku_url, token, environment, applicationName):
     """
     Initialize OpenAI monitoring for Doku.
 
@@ -44,7 +44,9 @@ def init(func, doku_url, token):
         prompt, model = get_prompt_and_model(args, kwargs)
 
         data = {
-            "source": "python",
+            "environment": environment,
+            "applicationName": applicationName,
+            "sourceLanguage": "python",
             "endpoint": "openai.chat.completions",
             "requestDuration": duration,
             "model": model,
@@ -81,7 +83,9 @@ def init(func, doku_url, token):
         prompt, model = get_prompt_and_model(args, kwargs)
 
         data = {
-            "source": "python",
+            "environment": environment,
+            "applicationName": applicationName,
+            "sourceLanguage": "python",
             "endpoint": "openai.completions",
             "requestDuration": duration,
             "model": model,
@@ -118,7 +122,9 @@ def init(func, doku_url, token):
         prompt, model = get_prompt_and_model(args, kwargs)
 
         data = {
-            "source": "python",
+            "environment": environment,
+            "applicationName": applicationName,
+            "sourceLanguage": "python",
             "endpoint": "openai.emdeddings",
             "requestDuration": duration,
             "model": model,
@@ -150,7 +156,9 @@ def init(func, doku_url, token):
         _ , model = get_prompt_and_model(args, kwargs)
 
         data = {
-            "source": "python",
+            "environment": environment,
+            "applicationName": applicationName,
+            "sourceLanguage": "python",
             "endpoint": "openai.fine_tuning",
             "requestDuration": duration,
             "model": model,
@@ -191,7 +199,9 @@ def init(func, doku_url, token):
 
         for items in response.data:
             data = {
-                "source": "python",
+                "environment": environment,
+                "applicationName": applicationName,
+                "sourceLanguage": "python",
                 "endpoint": "openai.images.create",
                 "requestDuration": duration,
                 "model": model,
@@ -235,7 +245,9 @@ def init(func, doku_url, token):
         for items in response.data:
 
             data = {
-                "source": "python",
+                "environment": environment,
+                "applicationName": applicationName,
+                "sourceLanguage": "python",
                 "endpoint": "openai.images.create.variations",
                 "requestDuration": duration,
                 "model": model,
@@ -268,7 +280,9 @@ def init(func, doku_url, token):
         voice = kwargs.get('voice')
 
         data = {
-            "source": "python",
+            "environment": environment,
+            "applicationName": applicationName,
+            "sourceLanguage": "python",
             "endpoint": "openai.audio.speech.create",
             "requestDuration": duration,
             "model": model,

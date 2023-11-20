@@ -15,8 +15,10 @@ class DokuConfig:
     func = None
     doku_url = None
     token = None
+    environment = None
+    applicationName = None
 
-def init(func, doku_url, token):
+def init(func, doku_url, token, environment="default", applicationName="default"):
     """
     Initialize Doku configuration based on the provided function.
 
@@ -29,13 +31,17 @@ def init(func, doku_url, token):
     DokuConfig.func = func
     DokuConfig.doku_url = doku_url
     DokuConfig.token = token
+    DokuConfig.environment = environment
+    DokuConfig.applicationName = applicationName
 
     # pylint: disable=no-else-return
     if hasattr(func.chat, 'completions') and callable(func.chat.completions.create) and ('.openai.azure.com/' not in str(func.base_url)):
-        init_openai(func, doku_url, token)
+        init_openai(func, doku_url, token, environment, applicationName)
         return
     # pylint: disable=no-else-return
     elif hasattr(func, 'generate') and callable(func.generate):
-        init_cohere(func, doku_url, token)
+        init_cohere(func, doku_url, token, environment, applicationName)
         return
-    init_anthropic(func, doku_url, token)
+    elif hasattr(func, 'count_tokens') and callable(func.count_tokens):
+        init_anthropic(func, doku_url, token, environment, applicationName)
+        return
