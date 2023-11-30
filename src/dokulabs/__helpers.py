@@ -1,33 +1,9 @@
 """
-This moduel has get_prompt_and_model and send_data functions to be used by other modules.
+This moduel has send_data functions to be used by other modules.
 """
 
 import logging
 import requests
-
-def get_prompt_and_model(args, kwargs):
-    """
-    Get prompt and model from arguments and keyword arguments.
-
-    Args:
-        args (list): List of arguments.
-        kwargs (dict): Keyword arguments.
-
-    Returns:
-        tuple: Tuple containing prompt and model.
-    """
-
-    prompt = (
-        args[1] if args and len(args) > 1 and isinstance(args[1], str)
-        else kwargs.get('prompt',
-                        kwargs.get('input',
-                        kwargs.get('messages', [{"content": None}])[0]['content'])
-        )
-    )
-
-    model = kwargs.get('model')
-
-    return prompt, model
 
 def send_data(data, doku_url, doku_token):
     """

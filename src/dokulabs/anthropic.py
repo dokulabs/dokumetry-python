@@ -5,7 +5,7 @@ Module for monitoring Anthropic API calls.
 import time
 from .__helpers import send_data
 
-def init(func, doku_url, token, environment, application_name):
+def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize Anthropic integration with Doku.
 
@@ -13,6 +13,9 @@ def init(func, doku_url, token, environment, application_name):
         func: The Anthropic function to be patched.
         doku_url (str): Doku URL.
         token (str): Authentication token.
+        environment (str): Doku environment.
+        application_name (str): Doku application name.
+        skip_resp (bool): Skip response processing.
     """
 
     original_completions_create = func.completions.create
@@ -45,6 +48,7 @@ def init(func, doku_url, token, environment, application_name):
                 "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "anthropic.completions",
+                "skipResp": skip_resp,
                 "completionTokens": completion_tokens,
                 "promptTokens": prompt_tokens,
                 "requestDuration": duration,

@@ -26,7 +26,7 @@ def count_tokens(text):
 
     return num_tokens
 
-def init(func, doku_url, token, environment, application_name):
+def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize Cohere monitoring for Doku.
 
@@ -34,6 +34,9 @@ def init(func, doku_url, token, environment, application_name):
         func: The Cohere function to be patched.
         doku_url (str): Doku URL.
         token (str): Doku Authentication token.
+        environment (str): Doku environment.
+        application_name (str): Doku application name.
+        skip_resp (bool): Skip response processing.
     """
 
     original_generate = func.generate
@@ -66,6 +69,7 @@ def init(func, doku_url, token, environment, application_name):
                     "applicationName": application_name,
                     "sourceLanguage": "python",
                     "endpoint": "cohere.generate",
+                    "skipResp": skip_resp,
                     "completionTokens": count_tokens(generation.text),
                     "promptTokens": count_tokens(prompt),
                     "requestDuration": duration,
@@ -105,6 +109,7 @@ def init(func, doku_url, token, environment, application_name):
                 "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "cohere.embed",
+                "skipResp": skip_resp,
                 "requestDuration": duration,
                 "model": model,
                 "prompt": prompt,
@@ -141,6 +146,7 @@ def init(func, doku_url, token, environment, application_name):
                     "applicationName": application_name,
                     "sourceLanguage": "python",
                     "endpoint": "cohere.chat",
+                    "skipResp": skip_resp,
                     "requestDuration": duration,
                     "completionTokens": response.token_count["response_tokens"],
                     "promptTokens": response.token_count["prompt_tokens"],
@@ -181,6 +187,7 @@ def init(func, doku_url, token, environment, application_name):
                     "applicationName": application_name,
                     "sourceLanguage": "python",
                     "endpoint": "cohere.chat",
+                    "skipResp": skip_resp,
                     "requestDuration": duration,
                     "completionTokens": count_tokens(response.summary),
                     "promptTokens": count_tokens(prompt),

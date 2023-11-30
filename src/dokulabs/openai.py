@@ -3,11 +3,11 @@ Module for monitoring OpenAI API calls.
 """
 
 import time
-from .__helpers import send_data , get_prompt_and_model
+from .__helpers import send_data
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def init(func, doku_url, token, environment, application_name):
+def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize OpenAI monitoring for Doku.
 
@@ -15,6 +15,9 @@ def init(func, doku_url, token, environment, application_name):
         func: The OpenAI function to be patched.
         doku_url (str): Doku URL.
         token (str): Doku Authentication token.
+        environment (str): Doku environment.
+        application_name (str): Doku application name.
+        skip_resp (bool): Skip response processing.
     """
 
     original_chat_create = func.chat.completions.create
@@ -65,6 +68,7 @@ def init(func, doku_url, token, environment, application_name):
             "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.chat.completions",
+            "skipResp": skip_resp,
             "requestDuration": duration,
             "model": model,
             "prompt": prompt,
@@ -84,12 +88,10 @@ def init(func, doku_url, token, environment, application_name):
                 while i < kwargs["n"]:
                     data["response"] = response.choices[i].message.content
                     i += 1
-                    print(data)
-                    # send_data(data, doku_url, token)
+                    send_data(data, doku_url, token)
                 return response
 
-        print(data)
-        # send_data(data, doku_url, token)
+        send_data(data, doku_url, token)
 
         return response
 
@@ -117,6 +119,7 @@ def init(func, doku_url, token, environment, application_name):
             "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.completions",
+            "skipResp": skip_resp,
             "requestDuration": duration,
             "model": model,
             "prompt": prompt,
@@ -132,7 +135,12 @@ def init(func, doku_url, token, environment, application_name):
             if "n" not in kwargs or kwargs["n"] == 1:
                 data["response"] = response.choices[0].text
             else:
-                data["response"] = str([choice.text for choice in response.choices])
+                i = 0
+                while i < kwargs["n"]:
+                    data["response"] = response.choices[i].text
+                    i += 1
+                    send_data(data, doku_url, token)
+                return response
 
         send_data(data, doku_url, token)
 
@@ -162,6 +170,7 @@ def init(func, doku_url, token, environment, application_name):
             "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.emdeddings",
+            "skipResp": skip_resp,
             "requestDuration": duration,
             "model": model,
             "prompt": prompt,
@@ -196,6 +205,7 @@ def init(func, doku_url, token, environment, application_name):
             "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.fine_tuning",
+            "skipResp": skip_resp,
             "requestDuration": duration,
             "model": model,
             "finetuneJobId": response.id,
@@ -240,6 +250,7 @@ def init(func, doku_url, token, environment, application_name):
                 "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "openai.images.create",
+                "skipResp": skip_resp,
                 "requestDuration": duration,
                 "model": model,
                 "prompt": prompt,
@@ -286,6 +297,7 @@ def init(func, doku_url, token, environment, application_name):
                 "applicationName": application_name,
                 "sourceLanguage": "python",
                 "endpoint": "openai.images.create.variations",
+                "skipResp": skip_resp,
                 "requestDuration": duration,
                 "model": model,
                 "imageSize": size,
@@ -322,6 +334,7 @@ def init(func, doku_url, token, environment, application_name):
             "applicationName": application_name,
             "sourceLanguage": "python",
             "endpoint": "openai.audio.speech.create",
+            "skipResp": skip_resp,
             "requestDuration": duration,
             "model": model,
             "prompt": prompt,
