@@ -41,7 +41,24 @@ def init(func, doku_url, token, environment, application_name):
         response = original_chat_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        prompt, model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
+        message_prompt = kwargs.get('messages', "No prompt provided")
+        formatted_messages = []
+        for message in message_prompt:
+            role = message["role"]
+            content = message["content"]
+
+            if isinstance(content, list):
+                content_str = ", ".join(
+                    f"{item['type']}: {item['text'] if 'text' in item else item['image_url']}"
+                    if 'type' in item else f"text: {item['text']}"
+                    for item in content
+                )
+                formatted_messages.append(f"{role}: {content_str}")
+            else:
+                formatted_messages.append(f"{role}: {content}")
+
+        prompt = "\n".join(formatted_messages)
 
         data = {
             "environment": environment,
@@ -58,9 +75,21 @@ def init(func, doku_url, token, environment, application_name):
             data["promptTokens"] = response.usage.prompt_tokens
             data["totalTokens"] = response.usage.total_tokens
             data["finishReason"] = response.choices[0].finish_reason
-            data["response"] = response.choices[0].message.content
 
-        send_data(data, doku_url, token)
+        if "tools" not in kwargs:
+            if "n" not in kwargs or kwargs["n"] == 1:
+                data["response"] = response.choices[0].message.content
+            else:
+                i = 0
+                while i < kwargs["n"]:
+                    data["response"] = response.choices[i].message.content
+                    i += 1
+                    print(data)
+                    # send_data(data, doku_url, token)
+                return response
+
+        print(data)
+        # send_data(data, doku_url, token)
 
         return response
 
@@ -80,7 +109,8 @@ def init(func, doku_url, token, environment, application_name):
         response = original_completions_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        prompt, model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
+        prompt = kwargs.get('prompt', "No prompt provided")
 
         data = {
             "environment": environment,
@@ -97,7 +127,12 @@ def init(func, doku_url, token, environment, application_name):
             data["promptTokens"] = response.usage.prompt_tokens
             data["totalTokens"] = response.usage.total_tokens
             data["finishReason"] = response.choices[0].finish_reason
-            data["response"] = response.choices[0].text
+        
+        if "tools" not in kwargs:
+            if "n" not in kwargs or kwargs["n"] == 1:
+                data["response"] = response.choices[0].text
+            else:
+                data["response"] = str([choice.text for choice in response.choices])
 
         send_data(data, doku_url, token)
 
@@ -119,7 +154,8 @@ def init(func, doku_url, token, environment, application_name):
         response = original_embeddings_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        prompt, model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
+        prompt = kwargs.get('input', "No prompt provided")
 
         data = {
             "environment": environment,
@@ -153,7 +189,7 @@ def init(func, doku_url, token, environment, application_name):
         response = original_fine_tuning_jobs_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        _ , model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
 
         data = {
             "environment": environment,
@@ -186,7 +222,8 @@ def init(func, doku_url, token, environment, application_name):
         response = original_images_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        prompt , model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
+        prompt = kwargs.get('prompt', "No prompt provided")
         size = kwargs.get('size', '10324x1024') if 'size' not in kwargs else kwargs['size']
 
         if model is None:
@@ -231,7 +268,7 @@ def init(func, doku_url, token, environment, application_name):
         response = original_images_create_variation(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        _ , model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
         size = kwargs.get('size', '10324x1024') if 'size' not in kwargs else kwargs['size']
 
         if model is None:
@@ -260,7 +297,7 @@ def init(func, doku_url, token, environment, application_name):
 
         return response
 
-    def patched_audio_speech_variation(*args, **kwargs):
+    def patched_audio_speech_create(*args, **kwargs):
         """
         Patched version of OpenAI's audio speech create method.
 
@@ -276,7 +313,8 @@ def init(func, doku_url, token, environment, application_name):
         response = original_audio_speech_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        prompt , model = get_prompt_and_model(args, kwargs)
+        model = kwargs.get('model', "No Model provided")
+        prompt = kwargs.get('input', "No prompt provided")
         voice = kwargs.get('voice')
 
         data = {
@@ -301,4 +339,4 @@ def init(func, doku_url, token, environment, application_name):
     func.fine_tuning.jobs.create = patched_fine_tuning_create
     func.images.generate = patched_image_create
     func.images.create_variation = patched_image_create_variation
-    func.audio.speech.create = patched_audio_speech_variation
+    func.audio.speech.create = patched_audio_speech_create
