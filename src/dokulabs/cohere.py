@@ -26,6 +26,7 @@ def count_tokens(text):
 
     return num_tokens
 
+# pylint: disable=too-many-arguments
 def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize Cohere monitoring for Doku.

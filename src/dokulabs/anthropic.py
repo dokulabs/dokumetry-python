@@ -5,6 +5,7 @@ Module for monitoring Anthropic API calls.
 import time
 from .__helpers import send_data
 
+# pylint: disable=too-many-arguments
 def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize Anthropic integration with Doku.

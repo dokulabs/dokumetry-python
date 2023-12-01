@@ -6,7 +6,7 @@ import time
 from .__helpers import send_data
 
 # pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-arguments
 def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize OpenAI monitoring for Doku.
@@ -130,7 +130,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
             data["promptTokens"] = response.usage.prompt_tokens
             data["totalTokens"] = response.usage.total_tokens
             data["finishReason"] = response.choices[0].finish_reason
-        
+
         if "tools" not in kwargs:
             if "n" not in kwargs or kwargs["n"] == 1:
                 data["response"] = response.choices[0].text
