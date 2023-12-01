@@ -48,6 +48,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         model = kwargs.get('model', "No Model provided")
         message_prompt = kwargs.get('messages', "No prompt provided")
         formatted_messages = []
+
         for message in message_prompt:
             role = message["role"]
             content = message["content"]
@@ -245,6 +246,11 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         else:
             image = "url"
 
+        if 'quality' not in kwargs:
+            quality = "standard"
+        else:
+            quality = kwargs['quality']
+
         for items in response.data:
             data = {
                 "environment": environment,
@@ -256,6 +262,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
                 "model": model,
                 "prompt": prompt,
                 "imageSize": size,
+                "imageQuality": quality,
                 "revisedPrompt": items.revised_prompt,
                 "image": getattr(items, image)
             }
@@ -302,6 +309,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
                 "requestDuration": duration,
                 "model": model,
                 "imageSize": size,
+                "imageQuality": "standard",
                 "revisedPrompt": items.revised_prompt,
                 "image": getattr(items, image)
             }
