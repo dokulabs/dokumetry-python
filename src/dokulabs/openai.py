@@ -7,6 +7,7 @@ from .__helpers import send_data
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
+# pylint: disable=too-many-statements
 def init(func, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize OpenAI monitoring for Doku.
