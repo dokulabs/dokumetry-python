@@ -92,6 +92,8 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
                     i += 1
                     send_data(data, doku_url, token)
                 return response
+        else:
+            data["response"] = "Function called with tools"
 
         send_data(data, doku_url, token)
 
