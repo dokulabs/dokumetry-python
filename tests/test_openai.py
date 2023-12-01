@@ -107,7 +107,7 @@ def test_image_generation():
 
     image_generation_resp = client.images.generate(
         model='dall-e-2',
-        prompt='Generate an image of a cat.'
+        prompt='Generate an image of a cat.',
         n=1
     )
     assert image_generation_resp.created is not None

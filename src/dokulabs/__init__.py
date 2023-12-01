@@ -17,9 +17,9 @@ class DokuConfig:
     token = None
     environment = None
     application_name = None
-    skipResp = None
+    skip_resp = None
 
-def init(func, doku_url, token, environment="default", application_name="default", skipResp=False):
+def init(func, doku_url, token, environment="default", application_name="default", skip_resp=False):
     """
     Initialize Doku configuration based on the provided function.
 
@@ -29,7 +29,7 @@ def init(func, doku_url, token, environment="default", application_name="default
         token (str): Doku Authentication token.
         environment (str): Doku environment.
         application_name (str): Doku application name.
-        skipResp (bool): Skip response processing.
+        skip_resp (bool): Skip response processing.
     """
 
     DokuConfig.func = func
@@ -37,16 +37,16 @@ def init(func, doku_url, token, environment="default", application_name="default
     DokuConfig.token = token
     DokuConfig.environment = environment
     DokuConfig.application_name = application_name
-    DokuConfig.skipResp = skipResp
+    DokuConfig.skip_resp = skip_resp
 
     # pylint: disable=no-else-return, line-too-long
     if hasattr(func.chat, 'completions') and callable(func.chat.completions.create) and ('.openai.azure.com/' not in str(func.base_url)):
-        init_openai(func, doku_url, token, environment, application_name, skipResp)
+        init_openai(func, doku_url, token, environment, application_name, skip_resp)
         return
     # pylint: disable=no-else-return
     elif hasattr(func, 'generate') and callable(func.generate):
-        init_cohere(func, doku_url, token, environment, application_name, skipResp)
+        init_cohere(func, doku_url, token, environment, application_name, skip_resp)
         return
     elif hasattr(func, 'count_tokens') and callable(func.count_tokens):
-        init_anthropic(func, doku_url, token, environment, application_name, skipResp)
+        init_anthropic(func, doku_url, token, environment, application_name, skip_resp)
         return
