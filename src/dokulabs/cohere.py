@@ -103,7 +103,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         end_time = time.time()
         duration = end_time - start_time
         model = kwargs.get('model') if 'model' in kwargs else "embed-english-v2.0"
-        prompt = kwargs.get('texts')
+        prompt = str(kwargs.get('texts'))
 
         data = {
                 "environment": environment,
