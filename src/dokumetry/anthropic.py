@@ -6,12 +6,12 @@ import time
 from .__helpers import send_data
 
 # pylint: disable=too-many-arguments
-def init(func, doku_url, token, environment, application_name, skip_resp):
+def init(llm, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize Anthropic integration with Doku.
 
     Args:
-        func: The Anthropic function to be patched.
+        llm: The Anthropic function to be patched.
         doku_url (str): Doku URL.
         token (str): Authentication token.
         environment (str): Doku environment.
@@ -19,7 +19,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         skip_resp (bool): Skip response processing.
     """
 
-    original_completions_create = func.completions.create
+    original_completions_create = llm.completions.create
 
     def patched_completions_create(*args, **kwargs):
         """
@@ -41,8 +41,8 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         model = kwargs.get('model') if 'model' in kwargs else args[0]
         prompt = kwargs.get('prompt') if 'prompt' in kwargs else args[2]
 
-        prompt_tokens = func.count_tokens(prompt)
-        completion_tokens = func.count_tokens(response.completion)
+        prompt_tokens = llm.count_tokens(prompt)
+        completion_tokens = llm.count_tokens(response.completion)
 
         data = {
                 "environment": environment,
@@ -63,4 +63,4 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
 
         return response
 
-    func.completions.create = patched_completions_create
+    llm.completions.create = patched_completions_create

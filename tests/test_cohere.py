@@ -24,14 +24,14 @@ Note: Ensure the environment variables are properly set before running the tests
 
 import os
 import cohere
-import dokulabs
+import dokumetry
 
 # Global cohere client
 co = cohere.Client(os.getenv("COHERE_API_TOKEN"))
 
 # Global cohere initialization
 # pylint: disable=line-too-long
-dokulabs.init(co, doku_url=os.getenv("DOKU_URL"), token=os.getenv("DOKU_TOKEN"), environment="DOKU-TESTING", application_name="doku-python-sdk-test", skip_resp=False)
+dokumetry.init(co, doku_url=os.getenv("DOKU_URL"), token=os.getenv("DOKU_TOKEN"), environment="DOKU-TESTING", application_name="doku-python-sdk-test", skip_resp=False)
 
 # pylint disable=line-too-long
 def test_summarize():

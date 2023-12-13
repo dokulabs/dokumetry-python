@@ -1,5 +1,5 @@
 """
-__init__ module for dokulabs package.
+__init__ module for dokumetry package.
 """
 
 from .openai import init as init_openai
@@ -12,7 +12,7 @@ class DokuConfig:
     Configuration class for Doku initialization.
     """
 
-    func = None
+    llm = None
     doku_url = None
     token = None
     environment = None
@@ -20,12 +20,12 @@ class DokuConfig:
     skip_resp = None
 
 # pylint: disable=too-many-arguments
-def init(func, doku_url, token, environment="default", application_name="default", skip_resp=False):
+def init(llm, doku_url, token, environment="default", application_name="default", skip_resp=False):
     """
     Initialize Doku configuration based on the provided function.
 
     Args:
-        func: The function to determine the platform (OpenAI, Cohere, Anthropic).
+        llm: The function to determine the platform (OpenAI, Cohere, Anthropic).
         doku_url (str): Doku URL.
         token (str): Doku Authentication token.
         environment (str): Doku environment.
@@ -33,7 +33,7 @@ def init(func, doku_url, token, environment="default", application_name="default
         skip_resp (bool): Skip response processing.
     """
 
-    DokuConfig.func = func
+    DokuConfig.llm = llm
     DokuConfig.doku_url = doku_url
     DokuConfig.token = token
     DokuConfig.environment = environment
@@ -41,13 +41,13 @@ def init(func, doku_url, token, environment="default", application_name="default
     DokuConfig.skip_resp = skip_resp
 
     # pylint: disable=no-else-return, line-too-long
-    if hasattr(func.chat, 'completions') and callable(func.chat.completions.create) and ('.openai.azure.com/' not in str(func.base_url)):
-        init_openai(func, doku_url, token, environment, application_name, skip_resp)
+    if hasattr(llm.chat, 'completions') and callable(llm.chat.completions.create) and ('.openai.azure.com/' not in str(llm.base_url)):
+        init_openai(llm, doku_url, token, environment, application_name, skip_resp)
         return
     # pylint: disable=no-else-return
-    elif hasattr(func, 'generate') and callable(func.generate):
-        init_cohere(func, doku_url, token, environment, application_name, skip_resp)
+    elif hasattr(llm, 'generate') and callable(llm.generate):
+        init_cohere(llm, doku_url, token, environment, application_name, skip_resp)
         return
-    elif hasattr(func, 'count_tokens') and callable(func.count_tokens):
-        init_anthropic(func, doku_url, token, environment, application_name, skip_resp)
+    elif hasattr(llm, 'count_tokens') and callable(llm.count_tokens):
+        init_anthropic(llm, doku_url, token, environment, application_name, skip_resp)
         return

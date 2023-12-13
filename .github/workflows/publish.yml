@@ -31,7 +31,7 @@ jobs:
       run: |
         cat <<EOF > pyproject.toml
         [tool.poetry]
-        name = "dokulabs"
+        name = "dokumetry"
         version = "${{ github.event.inputs.version }}"
         description = "A Python library for tracking OpenAI API calls and sending usage metrics to Doku"
         authors = ["Doku Labs"]

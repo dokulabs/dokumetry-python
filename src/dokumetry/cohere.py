@@ -27,12 +27,12 @@ def count_tokens(text):
     return num_tokens
 
 # pylint: disable=too-many-arguments
-def init(func, doku_url, token, environment, application_name, skip_resp):
+def init(llm, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize Cohere monitoring for Doku.
 
     Args:
-        func: The Cohere function to be patched.
+        llm: The Cohere function to be patched.
         doku_url (str): Doku URL.
         token (str): Doku Authentication token.
         environment (str): Doku environment.
@@ -40,10 +40,10 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         skip_resp (bool): Skip response processing.
     """
 
-    original_generate = func.generate
-    original_embed = func.embed
-    original_chat = func.chat
-    original_summarize = func.summarize
+    original_generate = llm.generate
+    original_embed = llm.embed
+    original_chat = llm.chat
+    original_summarize = llm.summarize
 
     def patched_generate(*args, **kwargs):
         """
@@ -201,7 +201,7 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
 
         return response
 
-    func.generate = patched_generate
-    func.embed = embeddings_generate
-    func.chat = chat_generate
-    func.summarize = summarize_generate
+    llm.generate = patched_generate
+    llm.embed = embeddings_generate
+    llm.chat = chat_generate
+    llm.summarize = summarize_generate

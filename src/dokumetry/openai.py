@@ -8,12 +8,12 @@ from .__helpers import send_data
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-statements
-def init(func, doku_url, token, environment, application_name, skip_resp):
+def init(llm, doku_url, token, environment, application_name, skip_resp):
     """
     Initialize OpenAI monitoring for Doku.
 
     Args:
-        func: The OpenAI function to be patched.
+        llm: The OpenAI function to be patched.
         doku_url (str): Doku URL.
         token (str): Doku Authentication token.
         environment (str): Doku environment.
@@ -21,13 +21,13 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
         skip_resp (bool): Skip response processing.
     """
 
-    original_chat_create = func.chat.completions.create
-    original_completions_create = func.completions.create
-    original_embeddings_create = func.embeddings.create
-    original_fine_tuning_jobs_create = func.fine_tuning.jobs.create
-    original_images_create = func.images.generate
-    original_images_create_variation = func.images.create_variation
-    original_audio_speech_create = func.audio.speech.create
+    original_chat_create = llm.chat.completions.create
+    original_completions_create = llm.completions.create
+    original_embeddings_create = llm.embeddings.create
+    original_fine_tuning_jobs_create = llm.fine_tuning.jobs.create
+    original_images_create = llm.images.generate
+    original_images_create_variation = llm.images.create_variation
+    original_audio_speech_create = llm.audio.speech.create
 
     def patched_chat_create(*args, **kwargs):
         """
@@ -357,10 +357,10 @@ def init(func, doku_url, token, environment, application_name, skip_resp):
 
         return response
 
-    func.chat.completions.create = patched_chat_create
-    func.completions.create = patched_completions_create
-    func.embeddings.create = patched_embeddings_create
-    func.fine_tuning.jobs.create = patched_fine_tuning_create
-    func.images.generate = patched_image_create
-    func.images.create_variation = patched_image_create_variation
-    func.audio.speech.create = patched_audio_speech_create
+    llm.chat.completions.create = patched_chat_create
+    llm.completions.create = patched_completions_create
+    llm.embeddings.create = patched_embeddings_create
+    llm.fine_tuning.jobs.create = patched_fine_tuning_create
+    llm.images.generate = patched_image_create
+    llm.images.create_variation = patched_image_create_variation
+    llm.audio.speech.create = patched_audio_speech_create
