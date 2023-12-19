@@ -136,7 +136,7 @@ We welcome contributions to the Doku Python Library (`dokumetry`) project. Pleas
 
 ## License
 
-Doku Python Library (`dokumetry`) is available under the [GPL-3.0](LICENSE).
+Doku Python Library (`dokumetry`) is available under the [GPL-3.0](LICENSE) License.
 
 ## Support
 
