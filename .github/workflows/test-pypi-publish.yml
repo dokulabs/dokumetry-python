@@ -23,18 +23,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install build
     
+    - name: Remove Main pyproject.toml from repository
+      run: rm pyproject.toml
+
     - name: Create a new pyproject.toml
       run: |
         cat <<EOF > pyproject.toml
         [tool.poetry]
         name = "dokumetry"
         version = "0.0.${{ github.run_number }}"
-        description = "A Python library for tracking OpenAI API calls and sending usage metrics to Doku"
+        description = "A Python library for tracking LLM and Generative AI usage and sending the usage data to Doku"
         authors = ["Doku Labs"]
         repository = "https://github.com/dokulabs/python-sdk"
         readme = "README.md"
         homepage = "https://github.com/dokulabs/python-sdk"
-        keywords = ["openai", "anthropic", "claude", "cohere", "llm monitoring", "observability", "monitoring", "gpt"]
+        keywords = ["openai", "anthropic", "claude", "cohere", "llm monitoring", "observability", "monitoring", "gpt", "Generative AI", "chatGPT"]
 
         [tool.poetry.dependencies]
         python = "^3.7.1"
