@@ -1,13 +1,18 @@
-# Doku Python SDK
+# Doku Python SDK - dokumetry
+
+[![Doku Python Package](https://img.shields.io/badge/Doku-orange)](https://github.com/dokulabs/doku)
+[![Library Version](https://img.shields.io/github/tag/dokulabs/python-sdk.svg?&label=Library%20Version&logo=pypi)](https://github.com/dokulabs/python-sdk/tags)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/pulse)
+[![GitHub Contributors](https://img.shields.io/github/contributors/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/graphs/contributors)
 
 [![Tests](https://github.com/dokulabs/python-sdk/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/tests.yml)
 [![Pylint](https://github.com/dokulabs/python-sdk/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/pylint.yml)
 
-Doku Python SDK empowers you to effortlessly track and monitor language learning model (LLM) usage data and metrics from your Python code. It seamlessly integrates with major LLM Platforms:
+Doku Python SDK (`dokumetry`) empowers you to effortlessly track and monitor language learning model (LLM) usage data and metrics from your Python code. It seamlessly integrates with major LLM Platforms:
 
- - [x] OpenAI
- - [x] Anthropic
- - [x] Cohere
+ - ✅ OpenAI
+ - ✅ Anthropic
+ - ✅ Cohere
 
 All LLM observability usage data is sent directly to the Doku Platform for streamlined tracking. Get started with Doku Python SDK for simplified and effective observability.
 
@@ -29,7 +34,7 @@ All LLM observability usage data is sent directly to the Doku Platform for strea
 pip install dokumetry
 ```
 
-## Quick Use
+## Quick Start ⚡️
 
 ### OpenAI
 
@@ -48,7 +53,7 @@ chat_completion = client.chat.completions.create(
     messages=[
         {
             "role": "user",
-            "content": "Say this is a test",
+            "content": "What is LLM Observability",
         }
     ],
     model="gpt-3.5-turbo",
@@ -72,7 +77,7 @@ dokumetry.init(anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 completion = anthropic.completions.create(
     model="claude-2",
     max_tokens_to_sample=300,
-    prompt=f"{HUMAN_PROMPT} how does a court case get to the Supreme Court?{AI_PROMPT}",
+    prompt=f"{HUMAN_PROMPT} What is LLM Observability?{AI_PROMPT}",
 )
 print(completion.completion)
 ```
@@ -90,7 +95,7 @@ co = cohere.Client('YOUR_API_KEY')
 dokumetry.init(co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 # generate a prediction for a prompt
-prediction = co.chat(message='Howdy! 🤠', model='command')
+prediction = co.chat(message='What is LLM Observability?', model='command')
 
 # print the predicted text
 print(f'Chatbot: {prediction.text}')
@@ -116,15 +121,23 @@ Changes to library internals which are technically public but not intended or do
 Changes that we do not expect to impact the vast majority of users in practice.
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/dokulabs/python-sdk/issues) with questions, bugs, or suggestions.
-
 ## Requirements
 Python >= 3.7 is supported.
 
 If you are interested in other runtime environments, please open or upvote an issue on GitHub.
 
+## Security
+
+Doku Python Library(`dokumetry`) sends the observability data over HTTP/HTTPS to the Doku Ingester which uses key based authentication mechanism to ensure the security of your data. Be sure to keep your API keys confidential and manage permissions diligently. Refer to our [Security Policy](SECURITY)
+
 ## Contributing
-We welcome contributors for documentation, integrations, and feature requests. Share your ideas or open an issue on GitHub to engage with the community.
+
+We welcome contributions to the Doku Python Library(`dokumetry`) project. Please refer to [CONTRIBUTING](CONTRIBUTING) for detailed guidelines on how you can participate.
 
 ## License
-Doku's Python SDK is licensed under the GPL-3.0 license. Your feedback and contributions are valued; let's build a better observability experience together!
+
+Doku Python Library(`dokumetry`) is available under the [GPL-3.0](LICENSE).
+
+## Support
+
+For support, issues, or feature requests, submit an issue through the [GitHub issues](https://github.com/dokulabs/python-sdk/issues) associated with this repository.
