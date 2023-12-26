@@ -49,7 +49,7 @@ client = OpenAI(
 )
 
 # Pass the above `client` object along with your DOKU URL and Token and this will make sure that all OpenAI calls are automatically tracked.
-dokumetry.init(client, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+dokumetry.init(llm=client, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 chat_completion = client.chat.completions.create(
     messages=[
@@ -74,7 +74,7 @@ anthropic = Anthropic(
 )
 
 # Pass the above `anthropic` object along with your DOKU URL and Token and this will make sure that all Anthropic calls are automatically tracked.
-dokumetry.init(anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+dokumetry.init(llm=anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 completion = anthropic.completions.create(
     model="claude-2",
@@ -94,7 +94,7 @@ import dokumetry
 co = cohere.Client('YOUR_API_KEY')
 
 # Pass the above `co` object along with your DOKU URL and Token and this will make sure that all Cohere calls are automatically tracked.
-dokumetry.init(co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+dokumetry.init(llm=co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 # generate a prediction for a prompt
 prediction = co.chat(message='What is LLM Observability?', model='command')
