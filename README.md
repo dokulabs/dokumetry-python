@@ -1,7 +1,8 @@
 # Doku Python SDK - dokumetry
 
 [![Doku Python Package](https://img.shields.io/badge/Doku-orange)](https://github.com/dokulabs/doku)
-[![Library Version](https://img.shields.io/github/tag/dokulabs/python-sdk.svg?&label=Library%20Version&logo=pypi)](https://github.com/dokulabs/python-sdk/tags)
+[![License](https://img.shields.io/github/license/dokulabs/python-sdk?label=license&logo=github&color=f80&logoColor=fff%22%20alt=%22License)](https://github.com/dokulabs/python-sdk/blob/main/LICENSE)
+[![Library Version](https://img.shields.io/github/tag/dokulabs/python-sdk.svg?&label=Library%20Version&logo=python)](https://github.com/dokulabs/python-sdk/tags)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/pulse)
 [![GitHub Contributors](https://img.shields.io/github/contributors/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/graphs/contributors)
 
@@ -48,7 +49,7 @@ client = OpenAI(
 )
 
 # Pass the above `client` object along with your DOKU URL and Token and this will make sure that all OpenAI calls are automatically tracked.
-dokumetry.init(client, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+dokumetry.init(llm=client, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 chat_completion = client.chat.completions.create(
     messages=[
@@ -73,7 +74,7 @@ anthropic = Anthropic(
 )
 
 # Pass the above `anthropic` object along with your DOKU URL and Token and this will make sure that all Anthropic calls are automatically tracked.
-dokumetry.init(anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+dokumetry.init(llm=anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 completion = anthropic.completions.create(
     model="claude-2",
@@ -93,7 +94,7 @@ import dokumetry
 co = cohere.Client('YOUR_API_KEY')
 
 # Pass the above `co` object along with your DOKU URL and Token and this will make sure that all Cohere calls are automatically tracked.
-dokumetry.init(co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+dokumetry.init(llm=co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
 
 # generate a prediction for a prompt
 prediction = co.chat(message='What is LLM Observability?', model='command')
