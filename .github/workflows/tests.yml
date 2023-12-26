@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
   schedule:
-    - cron: '*/360 * * * *'
+    - cron: '0 9 * * *'
 
 env:
   OPENAI_API_TOKEN: ${{ secrets.OPENAI_API_TOKEN }}

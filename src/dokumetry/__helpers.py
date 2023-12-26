@@ -24,7 +24,7 @@ def send_data(data, doku_url, doku_token):
             'Content-Type': 'application/json',
         }
 
-        response = requests.post(doku_url.rstrip("/") + "/data",
+        response = requests.post(doku_url.rstrip("/") + "/api/push",
                                  json=data,
                                  headers=headers,
                                  timeout=30)
