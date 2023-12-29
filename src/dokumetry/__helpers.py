@@ -33,11 +33,3 @@ def send_data(data, doku_url, doku_token):
     except requests.exceptions.RequestException as req_err:
         logging.error("Error sending data to Doku: %s", req_err)
         raise  # Re-raise the exception after logging
-
-def get_tokens(string, model):
-    try:
-        encoding = tiktoken.encoding_for_model(model)
-    except KeyError:
-        encoding = tiktoken.get_encoding("cl100k_base")
-    num_tokens = len(encoding.encode(string))
-    return num_tokens
