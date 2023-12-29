@@ -3,7 +3,7 @@ Module for monitoring OpenAI API calls.
 """
 
 import time
-from .__helpers import send_data
+from .__helpers import send_data, get_tokens
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
@@ -76,13 +76,12 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "prompt": prompt,
         }
 
-        if "stream" not in kwargs:
+        if ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" not in kwargs):
             data["completionTokens"] = response.usage.completion_tokens
             data["promptTokens"] = response.usage.prompt_tokens
             data["totalTokens"] = response.usage.total_tokens
             data["finishReason"] = response.choices[0].finish_reason
 
-        if "tools" not in kwargs:
             if "n" not in kwargs or kwargs["n"] == 1:
                 data["response"] = response.choices[0].message.content
             else:
@@ -92,11 +91,24 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     i += 1
                     send_data(data, doku_url, token)
                 return response
-        else:
+        elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
+            data["response"] = ""
+            for chunk in response:
+                # Get the 'content' from the chunk, if it exists and is non-empty
+                content = chunk.choices[0].delta.content
+                if content:  # Check if content is not None or an empty string
+                    data["response"] += content
+            data["completionTokens"] = get_tokens(data["response"], model)
+            data["promptTokens"] = get_tokens(prompt, model)
+            data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
+        elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
             data["response"] = "Function called with tools"
+            data["completionTokens"] = response.usage.completion_tokens
+            data["promptTokens"] = response.usage.prompt_tokens
+            data["totalTokens"] = response.usage.total_tokens
 
         send_data(data, doku_url, token)
-
+        
         return response
 
     def patched_completions_create(*args, **kwargs):
@@ -129,13 +141,12 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "prompt": prompt,
         }
 
-        if "stream" not in kwargs:
+        if ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" not in kwargs):
             data["completionTokens"] = response.usage.completion_tokens
             data["promptTokens"] = response.usage.prompt_tokens
             data["totalTokens"] = response.usage.total_tokens
             data["finishReason"] = response.choices[0].finish_reason
 
-        if "tools" not in kwargs:
             if "n" not in kwargs or kwargs["n"] == 1:
                 data["response"] = response.choices[0].text
             else:
@@ -145,6 +156,22 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     i += 1
                     send_data(data, doku_url, token)
                 return response
+        elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
+            data["response"] = ""
+            for chunk in response:
+                # Get the 'content' from the chunk, if it exists and is non-empty
+                content = chunk.choices[0].text
+                if content:  # Check if content is not None or an empty string
+                    data["response"] += content
+            data["response"] = data["response"].lstrip()
+            data["completionTokens"] = get_tokens(data["response"], model)
+            data["promptTokens"] = get_tokens(prompt, model)
+            data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
+        elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
+            data["response"] = "Function called with tools"
+            data["completionTokens"] = response.usage.completion_tokens
+            data["promptTokens"] = response.usage.prompt_tokens
+            data["totalTokens"] = response.usage.total_tokens
 
         send_data(data, doku_url, token)
 
