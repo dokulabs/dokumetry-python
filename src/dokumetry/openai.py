@@ -161,9 +161,6 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 if content:  # Check if content is not None or an empty string
                     data["response"] += content
             data["response"] = data["response"].lstrip()
-            data["completionTokens"] = get_tokens(data["response"], model)
-            data["promptTokens"] = get_tokens(prompt, model)
-            data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
         elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
             data["response"] = "Function called with tools"
             data["completionTokens"] = response.usage.completion_tokens
