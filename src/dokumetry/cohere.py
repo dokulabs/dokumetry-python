@@ -15,8 +15,7 @@ def count_tokens(text):
     Returns:
         int: The number of tokens in the text.
     """
-
-    tokens_per_word = 2
+    tokens_per_word = 2.5
 
     # Split the text into words
     words = text.split()
@@ -66,17 +65,17 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
 
         for generation in response:
             data = {
-                    "environment": environment,
-                    "applicationName": application_name,
-                    "sourceLanguage": "python",
-                    "endpoint": "cohere.generate",
-                    "skipResp": skip_resp,
-                    "completionTokens": count_tokens(generation.text),
-                    "promptTokens": count_tokens(prompt),
-                    "requestDuration": duration,
-                    "model": model,
-                    "prompt": prompt,
-                    "response": generation.text,
+                "environment": environment,
+                "applicationName": application_name,
+                "sourceLanguage": "python",
+                "endpoint": "cohere.generate",
+                "skipResp": skip_resp,
+                "completionTokens": count_tokens(generation.text),
+                "promptTokens": count_tokens(prompt),
+                "requestDuration": duration,
+                "model": model,
+                "prompt": prompt,
+                "response": generation.text,
             }
 
             if "stream" not in kwargs:
@@ -106,14 +105,14 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         prompt = ' '.join(kwargs.get('texts', []))
 
         data = {
-                "environment": environment,
-                "applicationName": application_name,
-                "sourceLanguage": "python",
-                "endpoint": "cohere.embed",
-                "skipResp": skip_resp,
-                "requestDuration": duration,
-                "model": model,
-                "prompt": prompt,
+            "environment": environment,
+            "applicationName": application_name,
+            "sourceLanguage": "python",
+            "endpoint": "cohere.embed",
+            "skipResp": skip_resp,
+            "requestDuration": duration,
+            "model": model,
+            "prompt": prompt,
         }
 
         send_data(data, doku_url, token)
@@ -136,27 +135,31 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         response = original_chat(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        model = kwargs.get('model') if 'model' in kwargs else "command"
+        model = kwargs.get('model', "command")
         prompt = kwargs.get('message')
-        cost = response.token_count['billed_tokens'] * 0.000002
-
-        if "stream" not in kwargs:
-
-            data = {
-                    "environment": environment,
-                    "applicationName": application_name,
-                    "sourceLanguage": "python",
-                    "endpoint": "cohere.chat",
-                    "skipResp": skip_resp,
-                    "requestDuration": duration,
-                    "completionTokens": response.token_count["response_tokens"],
-                    "promptTokens": response.token_count["prompt_tokens"],
-                    "totalTokens": response.token_count["total_tokens"] ,
-                    "usageCost": cost,
-                    "model": model,
-                    "prompt": prompt,
-                    "response": response.text
-            }
+        data = {
+            "environment": environment,
+            "applicationName": application_name,
+            "sourceLanguage": "python",
+            "endpoint": "cohere.chat",
+            "skipResp": skip_resp,
+            "requestDuration": duration,
+            "prompt": prompt,
+            "model": model,
+        }
+        if "stream" not in kwargs or kwargs["stream"] == False:
+            data["completionTokens"] = response.meta["billed_units"]["output_tokens"]
+            data["promptTokens"] = response.meta["billed_units"]["input_tokens"]
+            data["totalTokens"] = response.token_count["billed_tokens"]
+            data["response"] = response.text
+        else:
+            data["response"] = ""
+            for event in response:
+                if event.event_type == "text-generation":   
+                    data["response"] += event.text
+            data["promptTokens"] = count_tokens(prompt)
+            data["completionTokens"] = count_tokens(data["response"])
+            data["totalTokens"] = data["promptTokens"] + data["completionTokens"]
 
         send_data(data, doku_url, token)
 
