@@ -194,7 +194,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "environment": environment,
             "applicationName": application_name,
             "sourceLanguage": "python",
-            "endpoint": "openai.emdeddings",
+            "endpoint": "openai.embeddings",
             "skipResp": skip_resp,
             "requestDuration": duration,
             "model": model,
@@ -257,9 +257,9 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         response = original_images_create(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        model = kwargs.get('model', "No Model provided")
+        model = kwargs.get('model', "dall-e-2")
         prompt = kwargs.get('prompt', "No prompt provided")
-        size = kwargs.get('size', '10324x1024') if 'size' not in kwargs else kwargs['size']
+        size = kwargs.get('size', '1024x1024')
 
         if model is None:
             model = "dall-e-2"
@@ -310,8 +310,8 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         response = original_images_create_variation(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        model = kwargs.get('model', "No Model provided")
-        size = kwargs.get('size', '10324x1024') if 'size' not in kwargs else kwargs['size']
+        model = kwargs.get('model', "dall-e-2")
+        size = kwargs.get('size', '1024x1024')
 
         if model is None:
             model = "dall-e-2"
@@ -371,7 +371,6 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "model": model,
             "prompt": prompt,
             "audioVoice": voice,
-            "promptTokens": len(prompt)
         }
 
         send_data(data, doku_url, token)
