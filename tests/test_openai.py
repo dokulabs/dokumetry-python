@@ -14,7 +14,7 @@ Global client and initialization are set up for the OpenAI client and Doku monit
 Environment Variables:
     - OPENAI_API_TOKEN: OpenAI API key for authentication.
     - DOKU_URL: Doku URL for monitoring data submission.
-    - DOKU_TOKEN: Doku authentication token.
+    - DOKU_TOKEN: Doku authentication api_key.
 
 Note: Ensure the environment variables are properly set before running the tests.
 """
@@ -30,7 +30,7 @@ client = OpenAI(
 
 # Global initialization
 # pylint: disable=line-too-long
-dokumetry.init(llm=client, doku_url=os.getenv("DOKU_URL"), token=os.getenv("DOKU_TOKEN"), environment="DOKU-TESTING", application_name="doku-python-sdk-test", skip_resp=False)
+dokumetry.init(llm=client, doku_url=os.getenv("DOKU_URL"), api_key=os.getenv("DOKU_TOKEN"), environment="dokumetry-testing", application_name="dokumetry-python-test", skip_resp=False)
 
 def test_completion_with_davinci():
     """

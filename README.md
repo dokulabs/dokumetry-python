@@ -1,15 +1,15 @@
 # Doku Python SDK - dokumetry
 
 [![Doku Python Package](https://img.shields.io/badge/Doku-orange)](https://github.com/dokulabs/doku)
-[![License](https://img.shields.io/github/license/dokulabs/python-sdk?label=license&logo=github&color=f80&logoColor=fff%22%20alt=%22License)](https://github.com/dokulabs/python-sdk/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/dokulabs/dokumetry-python?label=license&logo=github&color=f80&logoColor=fff%22%20alt=%22License)](https://github.com/dokulabs/dokumetry-python/blob/main/LICENSE)
 [![Downloads](https://static.pepy.tech/badge/dokumetry/month)](https://pepy.tech/project/dokumetry)
-[![Library Version](https://img.shields.io/github/tag/dokulabs/python-sdk.svg?&label=Library%20Version&logo=python)](https://github.com/dokulabs/python-sdk/tags)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/pulse)
-[![GitHub Contributors](https://img.shields.io/github/contributors/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/graphs/contributors)
+[![Library Version](https://img.shields.io/github/tag/dokulabs/dokumetry-python.svg?&label=Library%20Version&logo=python)](https://github.com/dokulabs/dokumetry-python/tags)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/dokulabs/dokumetry-python)](https://github.com/dokulabs/dokumetry-python/pulse)
+[![GitHub Contributors](https://img.shields.io/github/contributors/dokulabs/dokumetry-python)](https://github.com/dokulabs/dokumetry-python/graphs/contributors)
 
-[![Tests](https://github.com/dokulabs/python-sdk/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/tests.yml)
-[![Pylint](https://github.com/dokulabs/python-sdk/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/pylint.yml)
-[![CodeQL](https://github.com/dokulabs/python-sdk/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/github-code-scanning/codeql)
+[![Tests](https://github.com/dokulabs/dokumetry-python/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dokulabs/dokumetry-python/actions/workflows/tests.yml)
+[![Pylint](https://github.com/dokulabs/dokumetry-python/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/dokulabs/dokumetry-python/actions/workflows/pylint.yml)
+[![CodeQL](https://github.com/dokulabs/dokumetry-python/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/dokulabs/dokumetry-python/actions/workflows/github-code-scanning/codeql)
 
 [Doku Python SDK](pypi.org/project/dokumetry/) (`dokumetry`) empowers you to effortlessly track and monitor language learning model (LLM) usage data and metrics from your Python code. It seamlessly integrates with major LLM Platforms:
 
@@ -49,8 +49,8 @@ client = OpenAI(
     api_key="YOUR_OPENAI_KEY"
 )
 
-# Pass the above `client` object along with your DOKU URL and Token and this will make sure that all OpenAI calls are automatically tracked.
-dokumetry.init(llm=client, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+# Pass the above `client` object along with your Doku URL and API key and this will make sure that all OpenAI calls are automatically tracked.
+dokumetry.init(llm=client, doku_url="YOUR_DOKU_URL", api_key="YOUR_DOKU_TOKEN")
 
 chat_completion = client.chat.completions.create(
     messages=[
@@ -74,8 +74,8 @@ anthropic = Anthropic(
     api_key="my api key",
 )
 
-# Pass the above `anthropic` object along with your DOKU URL and Token and this will make sure that all Anthropic calls are automatically tracked.
-dokumetry.init(llm=anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+# Pass the above `anthropic` object along with your Doku URL and API key and this will make sure that all Anthropic calls are automatically tracked.
+dokumetry.init(llm=anthropic, doku_url="YOUR_DOKU_URL", api_key="YOUR_DOKU_TOKEN")
 
 completion = anthropic.completions.create(
     model="claude-2",
@@ -94,8 +94,8 @@ import dokumetry
 # initialize the Cohere Client with an API Key
 co = cohere.Client('YOUR_API_KEY')
 
-# Pass the above `co` object along with your DOKU URL and Token and this will make sure that all Cohere calls are automatically tracked.
-dokumetry.init(llm=co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+# Pass the above `co` object along with your Doku URL and API key and this will make sure that all Cohere calls are automatically tracked.
+dokumetry.init(llm=co, doku_url="YOUR_DOKU_URL", api_key="YOUR_DOKU_TOKEN")
 
 # generate a prediction for a prompt
 prediction = co.chat(message='What is LLM Observability?', model='command')
@@ -108,9 +108,9 @@ print(f'Chatbot: {prediction.text}')
 
 | Parameter         | Description                                               | Required      |
 |-------------------|-----------------------------------------------------------|---------------|
-| llm              | Language Learning Model (LLM) Object to track             | Yes           |
+| llm               | Language Learning Model (LLM) Object to track             | Yes           |
 | doku_url          | URL of your Doku Instance                                 | Yes           |
-| token             | Your Doku Token                                           | Yes           |
+| api_key           | Your Doku API key                                         | Yes           |
 | environment       | Custom environment tag to include in your metrics         | Optional      |
 | application_name  | Custom application name tag for your metrics              | Optional      |
 | skip_resp         | Skip response from the Doku Ingester for faster execution | Optional      |
@@ -143,4 +143,4 @@ Doku Python Library (`dokumetry`) is available under the [GPL-3.0](LICENSE) Lice
 
 ## Support
 
-For support, issues, or feature requests, submit an issue through the [GitHub issues](https://github.com/dokulabs/python-sdk/issues) associated with this repository.
+For support, issues, or feature requests, submit an issue through the [GitHub issues](https://github.com/dokulabs/dokumetry-python/issues) associated with this repository.

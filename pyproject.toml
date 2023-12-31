@@ -3,9 +3,9 @@ name = "dokumetry"
 version = "0.0.1"
 description = "A Python library for tracking LLM and GenAI usage and sending the usage data to Doku"
 authors = ["Doku Labs"]
-repository = "https://github.com/dokulabs/python-sdk"
+repository = "https://github.com/dokulabs/dokumetry-python"
 readme = "README.md"
-homepage = "https://github.com/dokulabs/python-sdk"
+homepage = "https://github.com/dokulabs/dokumetry-python"
 keywords = ["openai", "anthropic", "claude", "cohere", "llm monitoring", "observability", "monitoring", "gpt", "Generative AI", "chatGPT"]
 
 [tool.poetry.dependencies]

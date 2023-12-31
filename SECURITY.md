@@ -14,7 +14,7 @@ We encourage all users to run the latest version for the best security and stabi
 
 If you believe you have found a security vulnerability in `dokumetry` Python Library, we encourage you to report it to us through our GitHub repository. Follow these steps to submit a report:
 
-1. **Open an Issue**: Navigate to the [Issues tab](https://github.com/dokulabs/python-sdk/issues) in our GitHub repository and click on "New Issue".
+1. **Open an Issue**: Navigate to the [Issues tab](https://github.com/dokulabs/dokumetry-python/issues) in our GitHub repository and click on "New Issue".
 
 2. **Describe in Detail**: Provide a thorough description of the vulnerability. This description should include steps to reproduce the issue and any potential impact.
 

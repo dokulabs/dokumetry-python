@@ -12,7 +12,7 @@ def send_data(data, doku_url, doku_token):
     Args:
         data (dict): Data to be sent.
         api_url (str): URL of the API endpoint.
-        auth_token (str): Authentication token.
+        auth_token (str): Authentication api_key.
 
     Raises:
         requests.exceptions.RequestException: If an error occurs during the request.
