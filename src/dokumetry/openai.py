@@ -41,12 +41,11 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             OpenAIResponse: The response from OpenAI's chat completions create method.
         """
         streaming = kwargs.get('stream', False)
+        start_time = time.time()
         if streaming:
             def stream_generator():
                 accumulated_content = ""  
                 for chunk in original_chat_create(*args, **kwargs):
-                    start_time = time.time()
-                    
                     if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content'):
                         content = chunk.choices[0].delta.content
                         if content:
@@ -158,12 +157,12 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         Returns:
             OpenAIResponse: The response from OpenAI's completions create method.
         """
+        start_time = time.time()
         streaming = kwargs.get('stream', False)
         if streaming:
             def stream_generator():
                 accumulated_content = ""  
                 for chunk in original_chat_create(*args, **kwargs):
-                    start_time = time.time()
                     if hasattr(chunk.choices[0].text, 'content'):
                         content = chunk.choices[0].text
                         if content:
