@@ -42,16 +42,18 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
         """
         streaming = kwargs.get('stream', False)
         start_time = time.time()
+        #pylint: disable=no-else-return
         if streaming:
             def stream_generator():
-                accumulated_content = ""  
+                accumulated_content = ""
                 for chunk in original_chat_create(*args, **kwargs):
+                    #pylint: disable=line-too-long
                     if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content'):
                         content = chunk.choices[0].delta.content
                         if content:
-                            accumulated_content += content 
+                            accumulated_content += content
                     yield chunk
-                end_time = time.time() 
+                end_time = time.time()
                 duration = end_time - start_time
                 message_prompt = kwargs.get('messages', "No prompt provided")
                 formatted_messages = []
@@ -61,6 +63,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
 
                     if isinstance(content, list):
                         content_str = ", ".join(
+                            #pylint: disable=line-too-long
                             f"{item['type']}: {item['text'] if 'text' in item else item['image_url']}"
                             if 'type' in item else f"text: {item['text']}"
                             for item in content
@@ -85,7 +88,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
                 send_data(data, doku_url, api_key)
 
             return stream_generator()
-        else: 
+        else:
             start_time = time.time()
             response = original_chat_create(*args, **kwargs)
             end_time = time.time()
@@ -143,7 +146,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
                 data["totalTokens"] = response.usage.total_tokens
 
             send_data(data, doku_url, api_key)
-            
+
             return response
 
     def llm_completions(*args, **kwargs):
@@ -159,6 +162,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
         """
         start_time = time.time()
         streaming = kwargs.get('stream', False)
+        #pylint: disable=no-else-return
         if streaming:
             def stream_generator():
                 accumulated_content = ""  
@@ -166,9 +170,9 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
                     if hasattr(chunk.choices[0].text, 'content'):
                         content = chunk.choices[0].text
                         if content:
-                            accumulated_content += content 
+                            accumulated_content += content
                     yield chunk
-                end_time = time.time() 
+                end_time = time.time()
                 duration = end_time - start_time
                 prompt = kwargs.get('prompt', "No prompt provided")
                 data = {
@@ -205,7 +209,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
                 "prompt": prompt,
             }
 
-            if ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" not in kwargs):
+            if "tools" not in kwargs:
                 data["completionTokens"] = response.usage.completion_tokens
                 data["promptTokens"] = response.usage.prompt_tokens
                 data["totalTokens"] = response.usage.total_tokens
@@ -220,15 +224,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
                         i += 1
                         send_data(data, doku_url, api_key)
                     return response
-            elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
-                data["response"] = ""
-                for chunk in response:
-                    # Get the 'content' from the chunk, if it exists and is non-empty
-                    content = chunk.choices[0].text
-                    if content:  # Check if content is not None or an empty string
-                        data["response"] += content
-                data["response"] = data["response"].lstrip()
-            elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
+            elif "tools" in kwargs:
                 data["response"] = "Function called with tools"
                 data["completionTokens"] = response.usage.completion_tokens
                 data["promptTokens"] = response.usage.prompt_tokens

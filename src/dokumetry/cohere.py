@@ -25,7 +25,7 @@ def count_tokens(text):
 
     return num_tokens
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments, too-many-statements
 def init(llm, doku_url, api_key, environment, application_name, skip_resp):
     """
     Initialize Cohere monitoring for Doku.
@@ -57,14 +57,15 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
         """
         streaming = kwargs.get('stream', False)
         start_time = time.time()
+        #pylint: disable=no-else-return
         if streaming:
             def stream_generator():
-                accumulated_content = ""  
+                accumulated_content = ""
                 for event in original_generate(*args, **kwargs):
-                    accumulated_content += event.text 
+                    accumulated_content += event.text
                     yield event
 
-                end_time = time.time() 
+                end_time = time.time()
                 duration = end_time - start_time
                 prompt = kwargs.get('prompt')
                 data = {
@@ -111,7 +112,7 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
                 data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
                 send_data(data, doku_url, api_key)
-            
+
             return response
 
     def embeddings_generate(*args, **kwargs):
@@ -162,15 +163,16 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
         """
         streaming = kwargs.get('stream', False)
         start_time = time.time()
+        #pylint: disable=no-else-return
         if streaming:
             def stream_generator():
-                accumulated_content = ""  
+                accumulated_content = ""
                 for event in original_chat(*args, **kwargs):
-                    if event.event_type == "text-generation":   
-                        accumulated_content += event.text 
+                    if event.event_type == "text-generation":
+                        accumulated_content += event.text
                     yield event
-                
-                end_time = time.time() 
+
+                end_time = time.time()
                 duration = end_time - start_time
                 prompt = kwargs.get('message')
                 data = {

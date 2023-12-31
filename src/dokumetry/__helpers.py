@@ -4,7 +4,6 @@ This moduel has send_data functions to be used by other modules.
 
 import logging
 import requests
-import tiktoken
 
 def send_data(data, doku_url, doku_token):
     """
