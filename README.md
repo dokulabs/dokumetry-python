@@ -1,15 +1,15 @@
 # Doku Python SDK - dokumetry
 
 [![Doku Python Package](https://img.shields.io/badge/Doku-orange)](https://github.com/dokulabs/doku)
-[![License](https://img.shields.io/github/license/dokulabs/python-sdk?label=license&logo=github&color=f80&logoColor=fff%22%20alt=%22License)](https://github.com/dokulabs/python-sdk/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/dokulabs/dokumetry-python?label=license&logo=github&color=f80&logoColor=fff%22%20alt=%22License)](https://github.com/dokulabs/dokumetry-python/blob/main/LICENSE)
 [![Downloads](https://static.pepy.tech/badge/dokumetry/month)](https://pepy.tech/project/dokumetry)
-[![Library Version](https://img.shields.io/github/tag/dokulabs/python-sdk.svg?&label=Library%20Version&logo=python)](https://github.com/dokulabs/python-sdk/tags)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/pulse)
-[![GitHub Contributors](https://img.shields.io/github/contributors/dokulabs/python-sdk)](https://github.com/dokulabs/python-sdk/graphs/contributors)
+[![Library Version](https://img.shields.io/github/tag/dokulabs/dokumetry-python.svg?&label=Library%20Version&logo=python)](https://github.com/dokulabs/dokumetry-python/tags)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/dokulabs/dokumetry-python)](https://github.com/dokulabs/dokumetry-python/pulse)
+[![GitHub Contributors](https://img.shields.io/github/contributors/dokulabs/dokumetry-python)](https://github.com/dokulabs/dokumetry-python/graphs/contributors)
 
-[![Tests](https://github.com/dokulabs/python-sdk/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/tests.yml)
-[![Pylint](https://github.com/dokulabs/python-sdk/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/pylint.yml)
-[![CodeQL](https://github.com/dokulabs/python-sdk/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/dokulabs/python-sdk/actions/workflows/github-code-scanning/codeql)
+[![Tests](https://github.com/dokulabs/dokumetry-python/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dokulabs/dokumetry-python/actions/workflows/tests.yml)
+[![Pylint](https://github.com/dokulabs/dokumetry-python/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/dokulabs/dokumetry-python/actions/workflows/pylint.yml)
+[![CodeQL](https://github.com/dokulabs/dokumetry-python/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/dokulabs/dokumetry-python/actions/workflows/github-code-scanning/codeql)
 
 [Doku Python SDK](pypi.org/project/dokumetry/) (`dokumetry`) empowers you to effortlessly track and monitor language learning model (LLM) usage data and metrics from your Python code. It seamlessly integrates with major LLM Platforms:
 
@@ -143,4 +143,4 @@ Doku Python Library (`dokumetry`) is available under the [GPL-3.0](LICENSE) Lice
 
 ## Support
 
-For support, issues, or feature requests, submit an issue through the [GitHub issues](https://github.com/dokulabs/python-sdk/issues) associated with this repository.
+For support, issues, or feature requests, submit an issue through the [GitHub issues](https://github.com/dokulabs/dokumetry-python/issues) associated with this repository.
