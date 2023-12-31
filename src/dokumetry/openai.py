@@ -40,10 +40,10 @@ def init(llm, doku_url, api_key, environment, application_name, skip_resp):
         Returns:
             OpenAIResponse: The response from OpenAI's chat completions create method.
         """
-        isStreaming = kwargs.get('stream', False)
+        is_streaming = kwargs.get('stream', False)
         start_time = time.time()
         #pylint: disable=no-else-return
-        if isStreaming:
+        if is_streaming:
             def stream_generator():
                 accumulated_content = ""
                 for chunk in original_chat_create(*args, **kwargs):
