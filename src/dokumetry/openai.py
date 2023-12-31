@@ -29,7 +29,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
     original_images_create_variation = llm.images.create_variation
     original_audio_speech_create = llm.audio.speech.create
 
-    def patched_chat_create(*args, **kwargs):
+    def llm_chat_completions(*args, **kwargs):
         """
         Patched version of OpenAI's chat completions create method.
 
@@ -40,75 +40,114 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         Returns:
             OpenAIResponse: The response from OpenAI's chat completions create method.
         """
+        streaming = kwargs.get('stream', False)
+        if streaming:
+            def stream_generator():
+                accumulated_content = ""  
+                for chunk in original_chat_create(*args, **kwargs):
+                    start_time = time.time()
+                    
+                    if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content'):
+                        content = chunk.choices[0].delta.content
+                        if content:
+                            accumulated_content += content 
+                    yield chunk
+                end_time = time.time() 
+                duration = end_time - start_time
+                message_prompt = kwargs.get('messages', "No prompt provided")
+                formatted_messages = []
+                for message in message_prompt:
+                    role = message["role"]
+                    content = message["content"]
 
-        start_time = time.time()
-        response = original_chat_create(*args, **kwargs)
-        end_time = time.time()
-        duration = end_time - start_time
-        model = kwargs.get('model', "No Model provided")
-        message_prompt = kwargs.get('messages', "No prompt provided")
-        formatted_messages = []
+                    if isinstance(content, list):
+                        content_str = ", ".join(
+                            f"{item['type']}: {item['text'] if 'text' in item else item['image_url']}"
+                            if 'type' in item else f"text: {item['text']}"
+                            for item in content
+                        )
+                        formatted_messages.append(f"{role}: {content_str}")
+                    else:
+                        formatted_messages.append(f"{role}: {content}")
 
-        for message in message_prompt:
-            role = message["role"]
-            content = message["content"]
+                prompt = "\n".join(formatted_messages)
+                data = {
+                    "environment": environment,
+                    "applicationName": application_name,
+                    "sourceLanguage": "python",
+                    "endpoint": "openai.chat.completions",
+                    "skipResp": skip_resp,
+                    "requestDuration": duration,
+                    "model": kwargs.get('model', "No Model provided"),
+                    "prompt": prompt,
+                    "response": accumulated_content,
+                }
 
-            if isinstance(content, list):
-                content_str = ", ".join(
-                    f"{item['type']}: {item['text'] if 'text' in item else item['image_url']}"
-                    if 'type' in item else f"text: {item['text']}"
-                    for item in content
-                )
-                formatted_messages.append(f"{role}: {content_str}")
-            else:
-                formatted_messages.append(f"{role}: {content}")
+                send_data(data, doku_url, token)
 
-        prompt = "\n".join(formatted_messages)
+            return stream_generator()
+        else: 
+            start_time = time.time()
+            response = original_chat_create(*args, **kwargs)
+            end_time = time.time()
+            duration = end_time - start_time
+            model = kwargs.get('model', "No Model provided")
+            message_prompt = kwargs.get('messages', "No prompt provided")
+            formatted_messages = []
 
-        data = {
-            "environment": environment,
-            "applicationName": application_name,
-            "sourceLanguage": "python",
-            "endpoint": "openai.chat.completions",
-            "skipResp": skip_resp,
-            "requestDuration": duration,
-            "model": model,
-            "prompt": prompt,
-        }
+            for message in message_prompt:
+                role = message["role"]
+                content = message["content"]
 
-        if ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" not in kwargs):
-            data["completionTokens"] = response.usage.completion_tokens
-            data["promptTokens"] = response.usage.prompt_tokens
-            data["totalTokens"] = response.usage.total_tokens
-            data["finishReason"] = response.choices[0].finish_reason
+                if isinstance(content, list):
+                    content_str = ", ".join(
+                        f"{item['type']}: {item['text'] if 'text' in item else item['image_url']}"
+                        if 'type' in item else f"text: {item['text']}"
+                        for item in content
+                    )
+                    formatted_messages.append(f"{role}: {content_str}")
+                else:
+                    formatted_messages.append(f"{role}: {content}")
 
-            if "n" not in kwargs or kwargs["n"] == 1:
-                data["response"] = response.choices[0].message.content
-            else:
-                i = 0
-                while i < kwargs["n"]:
-                    data["response"] = response.choices[i].message.content
-                    i += 1
-                    send_data(data, doku_url, token)
-                return response
-        elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
-            data["response"] = ""
-            for chunk in response:
-                # Get the 'content' from the chunk, if it exists and is non-empty
-                content = chunk.choices[0].delta.content
-                if content:  # Check if content is not None or an empty string
-                    data["response"] += content
-        elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
-            data["response"] = "Function called with tools"
-            data["completionTokens"] = response.usage.completion_tokens
-            data["promptTokens"] = response.usage.prompt_tokens
-            data["totalTokens"] = response.usage.total_tokens
+            prompt = "\n".join(formatted_messages)
 
-        send_data(data, doku_url, token)
-        
-        return response
+            data = {
+                "environment": environment,
+                "applicationName": application_name,
+                "sourceLanguage": "python",
+                "endpoint": "openai.chat.completions",
+                "skipResp": skip_resp,
+                "requestDuration": duration,
+                "model": model,
+                "prompt": prompt,
+            }
 
-    def patched_completions_create(*args, **kwargs):
+            if "tools" not in kwargs:
+                data["completionTokens"] = response.usage.completion_tokens
+                data["promptTokens"] = response.usage.prompt_tokens
+                data["totalTokens"] = response.usage.total_tokens
+                data["finishReason"] = response.choices[0].finish_reason
+
+                if "n" not in kwargs or kwargs["n"] == 1:
+                    data["response"] = response.choices[0].message.content
+                else:
+                    i = 0
+                    while i < kwargs["n"]:
+                        data["response"] = response.choices[i].message.content
+                        i += 1
+                        send_data(data, doku_url, token)
+                    return response
+            elif "tools" in kwargs:
+                data["response"] = "Function called with tools"
+                data["completionTokens"] = response.usage.completion_tokens
+                data["promptTokens"] = response.usage.prompt_tokens
+                data["totalTokens"] = response.usage.total_tokens
+
+            send_data(data, doku_url, token)
+            
+            return response
+
+    def llm_completions(*args, **kwargs):
         """
         Patched version of OpenAI's completions create method.
 
@@ -119,57 +158,86 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         Returns:
             OpenAIResponse: The response from OpenAI's completions create method.
         """
+        streaming = kwargs.get('stream', False)
+        if streaming:
+            def stream_generator():
+                accumulated_content = ""  
+                for chunk in original_chat_create(*args, **kwargs):
+                    start_time = time.time()
+                    if hasattr(chunk.choices[0].text, 'content'):
+                        content = chunk.choices[0].text
+                        if content:
+                            accumulated_content += content 
+                    yield chunk
+                end_time = time.time() 
+                duration = end_time - start_time
+                prompt = kwargs.get('prompt', "No prompt provided")
+                data = {
+                    "environment": environment,
+                    "applicationName": application_name,
+                    "sourceLanguage": "python",
+                    "endpoint": "openai.completions",
+                    "skipResp": skip_resp,
+                    "requestDuration": duration,
+                    "model": kwargs.get('model', "No Model provided"),
+                    "prompt": prompt,
+                    "response": accumulated_content,
+                }
 
-        start_time = time.time()
-        response = original_completions_create(*args, **kwargs)
-        end_time = time.time()
-        duration = end_time - start_time
-        model = kwargs.get('model', "No Model provided")
-        prompt = kwargs.get('prompt', "No prompt provided")
+                send_data(data, doku_url, token)
 
-        data = {
-            "environment": environment,
-            "applicationName": application_name,
-            "sourceLanguage": "python",
-            "endpoint": "openai.completions",
-            "skipResp": skip_resp,
-            "requestDuration": duration,
-            "model": model,
-            "prompt": prompt,
-        }
+            return stream_generator()
+        else:
+            start_time = time.time()
+            response = original_completions_create(*args, **kwargs)
+            end_time = time.time()
+            duration = end_time - start_time
+            model = kwargs.get('model', "No Model provided")
+            prompt = kwargs.get('prompt', "No prompt provided")
 
-        if ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" not in kwargs):
-            data["completionTokens"] = response.usage.completion_tokens
-            data["promptTokens"] = response.usage.prompt_tokens
-            data["totalTokens"] = response.usage.total_tokens
-            data["finishReason"] = response.choices[0].finish_reason
+            data = {
+                "environment": environment,
+                "applicationName": application_name,
+                "sourceLanguage": "python",
+                "endpoint": "openai.completions",
+                "skipResp": skip_resp,
+                "requestDuration": duration,
+                "model": model,
+                "prompt": prompt,
+            }
 
-            if "n" not in kwargs or kwargs["n"] == 1:
-                data["response"] = response.choices[0].text
-            else:
-                i = 0
-                while i < kwargs["n"]:
-                    data["response"] = response.choices[i].text
-                    i += 1
-                    send_data(data, doku_url, token)
-                return response
-        elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
-            data["response"] = ""
-            for chunk in response:
-                # Get the 'content' from the chunk, if it exists and is non-empty
-                content = chunk.choices[0].text
-                if content:  # Check if content is not None or an empty string
-                    data["response"] += content
-            data["response"] = data["response"].lstrip()
-        elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
-            data["response"] = "Function called with tools"
-            data["completionTokens"] = response.usage.completion_tokens
-            data["promptTokens"] = response.usage.prompt_tokens
-            data["totalTokens"] = response.usage.total_tokens
+            if ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" not in kwargs):
+                data["completionTokens"] = response.usage.completion_tokens
+                data["promptTokens"] = response.usage.prompt_tokens
+                data["totalTokens"] = response.usage.total_tokens
+                data["finishReason"] = response.choices[0].finish_reason
 
-        send_data(data, doku_url, token)
+                if "n" not in kwargs or kwargs["n"] == 1:
+                    data["response"] = response.choices[0].text
+                else:
+                    i = 0
+                    while i < kwargs["n"]:
+                        data["response"] = response.choices[i].text
+                        i += 1
+                        send_data(data, doku_url, token)
+                    return response
+            elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
+                data["response"] = ""
+                for chunk in response:
+                    # Get the 'content' from the chunk, if it exists and is non-empty
+                    content = chunk.choices[0].text
+                    if content:  # Check if content is not None or an empty string
+                        data["response"] += content
+                data["response"] = data["response"].lstrip()
+            elif ("stream" not in kwargs or kwargs["stream"] == False) and ("tools" in kwargs):
+                data["response"] = "Function called with tools"
+                data["completionTokens"] = response.usage.completion_tokens
+                data["promptTokens"] = response.usage.prompt_tokens
+                data["totalTokens"] = response.usage.total_tokens
 
-        return response
+            send_data(data, doku_url, token)
+
+            return response
 
     def patched_embeddings_create(*args, **kwargs):
         """
@@ -377,8 +445,8 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
 
         return response
 
-    llm.chat.completions.create = patched_chat_create
-    llm.completions.create = patched_completions_create
+    llm.chat.completions.create = llm_chat_completions
+    llm.completions.create = llm_completions
     llm.embeddings.create = patched_embeddings_create
     llm.fine_tuning.jobs.create = patched_fine_tuning_create
     llm.images.generate = patched_image_create

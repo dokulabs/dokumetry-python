@@ -130,40 +130,63 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         Returns:
             CohereResponse: The response from Cohere's chat generate method.
         """
+        streaming = kwargs.get('stream', False)
+        if streaming:
+            def stream_generator():
+                accumulated_content = ""  
+                for event in original_chat(*args, **kwargs):
+                    start_time = time.time()
+                    
+                    if event.event_type == "text-generation":   
+                        accumulated_content += event.text 
+                    yield event
+                
+                end_time = time.time() 
+                duration = end_time - start_time
+                prompt = kwargs.get('message')
+                data = {
+                    "environment": environment,
+                    "applicationName": application_name,
+                    "sourceLanguage": "python",
+                    "endpoint": "openai.chat.completions",
+                    "skipResp": skip_resp,
+                    "requestDuration": duration,
+                    "model": kwargs.get('model', "command"),
+                    "prompt": prompt,
+                    "response": accumulated_content,
+                    "promptTokens": count_tokens(prompt),
+                    "completionTokens": count_tokens(accumulated_content),
+                    "totalTokens": count_tokens(prompt) + count_tokens(accumulated_content)
+                }
 
-        start_time = time.time()
-        response = original_chat(*args, **kwargs)
-        end_time = time.time()
-        duration = end_time - start_time
-        model = kwargs.get('model', "command")
-        prompt = kwargs.get('message')
-        data = {
-            "environment": environment,
-            "applicationName": application_name,
-            "sourceLanguage": "python",
-            "endpoint": "cohere.chat",
-            "skipResp": skip_resp,
-            "requestDuration": duration,
-            "prompt": prompt,
-            "model": model,
-        }
-        if "stream" not in kwargs or kwargs["stream"] == False:
-            data["completionTokens"] = response.meta["billed_units"]["output_tokens"]
-            data["promptTokens"] = response.meta["billed_units"]["input_tokens"]
-            data["totalTokens"] = response.token_count["billed_tokens"]
-            data["response"] = response.text
+                send_data(data, doku_url, token)
+
+            return stream_generator()
         else:
-            data["response"] = ""
-            for event in response:
-                if event.event_type == "text-generation":   
-                    data["response"] += event.text
-            data["promptTokens"] = count_tokens(prompt)
-            data["completionTokens"] = count_tokens(data["response"])
-            data["totalTokens"] = data["promptTokens"] + data["completionTokens"]
+            start_time = time.time()
+            response = original_chat(*args, **kwargs)
+            end_time = time.time()
+            duration = end_time - start_time
+            model = kwargs.get('model', "command")
+            prompt = kwargs.get('message')
+            data = {
+                "environment": environment,
+                "applicationName": application_name,
+                "sourceLanguage": "python",
+                "endpoint": "cohere.chat",
+                "skipResp": skip_resp,
+                "requestDuration": duration,
+                "prompt": prompt,
+                "model": model,
+                "completionTokens": response.meta["billed_units"]["output_tokens"],
+                "promptTokens": response.meta["billed_units"]["input_tokens"],
+                "totalTokens": response.token_count["billed_tokens"],
+                "response": response.text
+            }
 
-        send_data(data, doku_url, token)
+            send_data(data, doku_url, token)
 
-        return response
+            return response
 
     def summarize_generate(*args, **kwargs):
         """
