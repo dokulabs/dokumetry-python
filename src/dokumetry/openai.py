@@ -8,14 +8,14 @@ from .__helpers import send_data
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-statements
-def init(llm, doku_url, token, environment, application_name, skip_resp):
+def init(llm, doku_url, api_key, environment, application_name, skip_resp):
     """
     Initialize OpenAI monitoring for Doku.
 
     Args:
         llm: The OpenAI function to be patched.
         doku_url (str): Doku URL.
-        token (str): Doku Authentication token.
+        api_key (str): Doku Authentication api_key.
         environment (str): Doku environment.
         application_name (str): Doku application name.
         skip_resp (bool): Skip response processing.
@@ -82,7 +82,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     "response": accumulated_content,
                 }
 
-                send_data(data, doku_url, token)
+                send_data(data, doku_url, api_key)
 
             return stream_generator()
         else: 
@@ -134,7 +134,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     while i < kwargs["n"]:
                         data["response"] = response.choices[i].message.content
                         i += 1
-                        send_data(data, doku_url, token)
+                        send_data(data, doku_url, api_key)
                     return response
             elif "tools" in kwargs:
                 data["response"] = "Function called with tools"
@@ -142,7 +142,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 data["promptTokens"] = response.usage.prompt_tokens
                 data["totalTokens"] = response.usage.total_tokens
 
-            send_data(data, doku_url, token)
+            send_data(data, doku_url, api_key)
             
             return response
 
@@ -183,7 +183,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     "response": accumulated_content,
                 }
 
-                send_data(data, doku_url, token)
+                send_data(data, doku_url, api_key)
 
             return stream_generator()
         else:
@@ -218,7 +218,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     while i < kwargs["n"]:
                         data["response"] = response.choices[i].text
                         i += 1
-                        send_data(data, doku_url, token)
+                        send_data(data, doku_url, api_key)
                     return response
             elif ("stream" in kwargs and kwargs["stream"] == True) and ("tools" not in kwargs):
                 data["response"] = ""
@@ -234,7 +234,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 data["promptTokens"] = response.usage.prompt_tokens
                 data["totalTokens"] = response.usage.total_tokens
 
-            send_data(data, doku_url, token)
+            send_data(data, doku_url, api_key)
 
             return response
 
@@ -270,7 +270,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "totalTokens": response.usage.total_tokens
         }
 
-        send_data(data, doku_url, token)
+        send_data(data, doku_url, api_key)
 
         return response
 
@@ -304,7 +304,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "finetuneJobStatus": response.status,
         }
 
-        send_data(data, doku_url, token)
+        send_data(data, doku_url, api_key)
 
         return response
 
@@ -357,7 +357,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 "image": getattr(items, image)
             }
 
-            send_data(data, doku_url, token)
+            send_data(data, doku_url, api_key)
 
         return response
 
@@ -404,7 +404,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 "image": getattr(items, image)
             }
 
-            send_data(data, doku_url, token)
+            send_data(data, doku_url, api_key)
 
         return response
 
@@ -440,7 +440,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "audioVoice": voice,
         }
 
-        send_data(data, doku_url, token)
+        send_data(data, doku_url, api_key)
 
         return response
 

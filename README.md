@@ -49,8 +49,8 @@ client = OpenAI(
     api_key="YOUR_OPENAI_KEY"
 )
 
-# Pass the above `client` object along with your DOKU URL and Token and this will make sure that all OpenAI calls are automatically tracked.
-dokumetry.init(llm=client, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+# Pass the above `client` object along with your Doku URL and API key and this will make sure that all OpenAI calls are automatically tracked.
+dokumetry.init(llm=client, doku_url="YOUR_DOKU_URL", api_key="YOUR_DOKU_TOKEN")
 
 chat_completion = client.chat.completions.create(
     messages=[
@@ -74,8 +74,8 @@ anthropic = Anthropic(
     api_key="my api key",
 )
 
-# Pass the above `anthropic` object along with your DOKU URL and Token and this will make sure that all Anthropic calls are automatically tracked.
-dokumetry.init(llm=anthropic, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+# Pass the above `anthropic` object along with your Doku URL and API key and this will make sure that all Anthropic calls are automatically tracked.
+dokumetry.init(llm=anthropic, doku_url="YOUR_DOKU_URL", api_key="YOUR_DOKU_TOKEN")
 
 completion = anthropic.completions.create(
     model="claude-2",
@@ -94,8 +94,8 @@ import dokumetry
 # initialize the Cohere Client with an API Key
 co = cohere.Client('YOUR_API_KEY')
 
-# Pass the above `co` object along with your DOKU URL and Token and this will make sure that all Cohere calls are automatically tracked.
-dokumetry.init(llm=co, doku_url="YOUR_DOKU_URL", token="YOUR_DOKU_TOKEN")
+# Pass the above `co` object along with your Doku URL and API key and this will make sure that all Cohere calls are automatically tracked.
+dokumetry.init(llm=co, doku_url="YOUR_DOKU_URL", api_key="YOUR_DOKU_TOKEN")
 
 # generate a prediction for a prompt
 prediction = co.chat(message='What is LLM Observability?', model='command')
@@ -108,9 +108,9 @@ print(f'Chatbot: {prediction.text}')
 
 | Parameter         | Description                                               | Required      |
 |-------------------|-----------------------------------------------------------|---------------|
-| llm              | Language Learning Model (LLM) Object to track             | Yes           |
+| llm               | Language Learning Model (LLM) Object to track             | Yes           |
 | doku_url          | URL of your Doku Instance                                 | Yes           |
-| token             | Your Doku Token                                           | Yes           |
+| api_key           | Your Doku API key                                         | Yes           |
 | environment       | Custom environment tag to include in your metrics         | Optional      |
 | application_name  | Custom application name tag for your metrics              | Optional      |
 | skip_resp         | Skip response from the Doku Ingester for faster execution | Optional      |

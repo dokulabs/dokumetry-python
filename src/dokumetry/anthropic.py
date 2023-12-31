@@ -6,14 +6,14 @@ import time
 from .__helpers import send_data
 
 # pylint: disable=too-many-arguments
-def init(llm, doku_url, token, environment, application_name, skip_resp):
+def init(llm, doku_url, api_key, environment, application_name, skip_resp):
     """
     Initialize Anthropic integration with Doku.
 
     Args:
         llm: The Anthropic function to be patched.
         doku_url (str): Doku URL.
-        token (str): Authentication token.
+        api_key (str): Authentication api_key.
         environment (str): Doku environment.
         application_name (str): Doku application name.
         skip_resp (bool): Skip response processing.
@@ -59,7 +59,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 "response": response.completion
         }
 
-        send_data(data, doku_url, token)
+        send_data(data, doku_url, api_key)
 
         return response
 

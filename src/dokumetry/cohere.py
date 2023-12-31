@@ -26,14 +26,14 @@ def count_tokens(text):
     return num_tokens
 
 # pylint: disable=too-many-arguments
-def init(llm, doku_url, token, environment, application_name, skip_resp):
+def init(llm, doku_url, api_key, environment, application_name, skip_resp):
     """
     Initialize Cohere monitoring for Doku.
 
     Args:
         llm: The Cohere function to be patched.
         doku_url (str): Doku URL.
-        token (str): Doku Authentication token.
+        api_key (str): Doku Authentication api_key.
         environment (str): Doku environment.
         application_name (str): Doku application name.
         skip_resp (bool): Skip response processing.
@@ -82,7 +82,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 }
                 data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
-                send_data(data, doku_url, token)
+                send_data(data, doku_url, api_key)
 
             return stream_generator()
         else:
@@ -110,7 +110,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 }
                 data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
-                send_data(data, doku_url, token)
+                send_data(data, doku_url, api_key)
             
             return response
 
@@ -145,7 +145,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "promptTokens": response.meta["billed_units"]["input_tokens"],
         }
 
-        send_data(data, doku_url, token)
+        send_data(data, doku_url, api_key)
 
         return response
 
@@ -188,7 +188,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 }
                 data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
-                send_data(data, doku_url, token)
+                send_data(data, doku_url, api_key)
 
             return stream_generator()
         else:
@@ -213,7 +213,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                 "response": response.text
             }
 
-            send_data(data, doku_url, token)
+            send_data(data, doku_url, api_key)
 
             return response
 
@@ -251,7 +251,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         }
         data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
-        send_data(data, doku_url, token)
+        send_data(data, doku_url, api_key)
 
         return response
 
