@@ -55,35 +55,64 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         Returns:
             CohereResponse: The response from Cohere's generate method.
         """
-
+        streaming = kwargs.get('stream', False)
         start_time = time.time()
-        response = original_generate(*args, **kwargs)
-        end_time = time.time()
-        duration = end_time - start_time
-        model = kwargs.get('model') if 'model' in kwargs else "command"
-        prompt = kwargs.get('prompt')
+        if streaming:
+            def stream_generator():
+                accumulated_content = ""  
+                for event in original_generate(*args, **kwargs):
+                    accumulated_content += event.text 
+                    yield event
 
-        for generation in response:
-            data = {
-                "environment": environment,
-                "applicationName": application_name,
-                "sourceLanguage": "python",
-                "endpoint": "cohere.generate",
-                "skipResp": skip_resp,
-                "completionTokens": count_tokens(generation.text),
-                "promptTokens": count_tokens(prompt),
-                "requestDuration": duration,
-                "model": model,
-                "prompt": prompt,
-                "response": generation.text,
-            }
+                end_time = time.time() 
+                duration = end_time - start_time
+                prompt = kwargs.get('prompt')
+                data = {
+                    "environment": environment,
+                    "applicationName": application_name,
+                    "sourceLanguage": "python",
+                    "endpoint": "cohere.generate",
+                    "skipResp": skip_resp,
+                    "requestDuration": duration,
+                    "model": kwargs.get('model', "command"),
+                    "prompt": prompt,
+                    "response": accumulated_content,
+                    "promptTokens": count_tokens(prompt),
+                    "completionTokens": count_tokens(accumulated_content),
+                }
+                data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
-            if "stream" not in kwargs:
-                data["finishReason"] = generation.finish_reason
+                send_data(data, doku_url, token)
 
-            send_data(data, doku_url, token)
+            return stream_generator()
+        else:
+            start_time = time.time()
+            response = original_generate(*args, **kwargs)
+            end_time = time.time()
+            duration = end_time - start_time
+            model = kwargs.get('model') if 'model' in kwargs else "command"
+            prompt = kwargs.get('prompt')
 
-        return response
+            for generation in response:
+                data = {
+                    "environment": environment,
+                    "applicationName": application_name,
+                    "sourceLanguage": "python",
+                    "endpoint": "cohere.generate",
+                    "skipResp": skip_resp,
+                    "finishReason": generation.finish_reason,
+                    "completionTokens": count_tokens(generation.text),
+                    "promptTokens": count_tokens(prompt),
+                    "requestDuration": duration,
+                    "model": model,
+                    "prompt": prompt,
+                    "response": generation.text,
+                }
+                data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
+
+                send_data(data, doku_url, token)
+            
+            return response
 
     def embeddings_generate(*args, **kwargs):
         """
@@ -113,8 +142,9 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "requestDuration": duration,
             "model": model,
             "prompt": prompt,
+            "promptTokens": response.meta["billed_units"]["input_tokens"],
         }
-
+        print("\n\n------\n\n",data)
         send_data(data, doku_url, token)
 
         return response
@@ -131,12 +161,11 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             CohereResponse: The response from Cohere's chat generate method.
         """
         streaming = kwargs.get('stream', False)
+        start_time = time.time()
         if streaming:
             def stream_generator():
                 accumulated_content = ""  
                 for event in original_chat(*args, **kwargs):
-                    start_time = time.time()
-                    
                     if event.event_type == "text-generation":   
                         accumulated_content += event.text 
                     yield event
@@ -148,7 +177,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     "environment": environment,
                     "applicationName": application_name,
                     "sourceLanguage": "python",
-                    "endpoint": "openai.chat.completions",
+                    "endpoint": "cohere.chat",
                     "skipResp": skip_resp,
                     "requestDuration": duration,
                     "model": kwargs.get('model', "command"),
@@ -156,8 +185,8 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
                     "response": accumulated_content,
                     "promptTokens": count_tokens(prompt),
                     "completionTokens": count_tokens(accumulated_content),
-                    "totalTokens": count_tokens(prompt) + count_tokens(accumulated_content)
                 }
+                data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
                 send_data(data, doku_url, token)
 
@@ -207,21 +236,20 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         model = kwargs.get('model') if 'model' in kwargs else "command"
         prompt = kwargs.get('text')
 
-        if "stream" not in kwargs:
-
-            data = {
-                    "environment": environment,
-                    "applicationName": application_name,
-                    "sourceLanguage": "python",
-                    "endpoint": "cohere.chat",
-                    "skipResp": skip_resp,
-                    "requestDuration": duration,
-                    "completionTokens": count_tokens(response.summary),
-                    "promptTokens": count_tokens(prompt),
-                    "model": model,
-                    "prompt": prompt,
-                    "response": response.summary
-            }
+        data = {
+                "environment": environment,
+                "applicationName": application_name,
+                "sourceLanguage": "python",
+                "endpoint": "cohere.summarize",
+                "skipResp": skip_resp,
+                "requestDuration": duration,
+                "completionTokens": response.meta["billed_units"]["output_tokens"],
+                "promptTokens": response.meta["billed_units"]["input_tokens"],
+                "model": model,
+                "prompt": prompt,
+                "response": response.summary
+        }
+        data["totalTokens"] = data["completionTokens"] + data["promptTokens"]
 
         send_data(data, doku_url, token)
 
