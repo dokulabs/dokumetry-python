@@ -19,7 +19,7 @@ class DokuConfig:
     application_name = None
     skip_resp = None
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments, line-too-long
 def init(llm, doku_url, api_key, environment="default", application_name="default", skip_resp=False):
     """
     Initialize Doku configuration based on the provided function.
