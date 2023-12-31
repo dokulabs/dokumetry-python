@@ -90,7 +90,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             response = original_generate(*args, **kwargs)
             end_time = time.time()
             duration = end_time - start_time
-            model = kwargs.get('model') if 'model' in kwargs else "command"
+            model = kwargs.get('model', 'command')
             prompt = kwargs.get('prompt')
 
             for generation in response:
@@ -130,7 +130,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         response = original_embed(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        model = kwargs.get('model') if 'model' in kwargs else "embed-english-v2.0"
+        model = kwargs.get('model', "embed-english-v2.0")
         prompt = ' '.join(kwargs.get('texts', []))
 
         data = {
@@ -144,7 +144,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
             "prompt": prompt,
             "promptTokens": response.meta["billed_units"]["input_tokens"],
         }
-        print("\n\n------\n\n",data)
+
         send_data(data, doku_url, token)
 
         return response
@@ -233,7 +233,7 @@ def init(llm, doku_url, token, environment, application_name, skip_resp):
         response = original_summarize(*args, **kwargs)
         end_time = time.time()
         duration = end_time - start_time
-        model = kwargs.get('model') if 'model' in kwargs else "command"
+        model = kwargs.get('model', 'command')
         prompt = kwargs.get('text')
 
         data = {
