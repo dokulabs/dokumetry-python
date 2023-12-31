@@ -30,7 +30,7 @@ client = OpenAI(
 
 # Global initialization
 # pylint: disable=line-too-long
-dokumetry.init(llm=client, doku_url=os.getenv("DOKU_URL"), api_key=os.getenv("DOKU_TOKEN"), environment="DOKU-TESTING", application_name="doku-dokumetry-python-test", skip_resp=False)
+dokumetry.init(llm=client, doku_url=os.getenv("DOKU_URL"), api_key=os.getenv("DOKU_TOKEN"), environment="dokumetry-testing", application_name="dokumetry-python-test", skip_resp=False)
 
 def test_completion_with_davinci():
     """
